@@ -12,7 +12,8 @@ when a finger is close to the pad. This change can be used to detect a button pr
 
 ### Touchpad boards
 
-* buttons4x0 - Four capacitive touch buttons for use with breadboards or in a project
+* buttons4x0 - Four 11 mm capacitive touch buttons for use with breadboards or in a project
+   <img width=300 src="./docs/buttons4x0_render_front.jpg"><img width=300 src="./docs/buttons4x0_render_back.jpg">
 
 
 ## Touchwheels
