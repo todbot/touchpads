@@ -3,7 +3,12 @@
 	(generator "eeschema")
 	(generator_version "9.0")
 	(uuid "eef9afbb-3526-4d8f-8bee-76d32486563e")
-	(paper "A4")
+	(paper "A5")
+	(title_block
+		(title "buttons4x0")
+		(date "2025-09-22")
+		(company "todbot / Tod Kurt")
+	)
 	(lib_symbols
 		(symbol "Connector:Conn_01x05_Pin"
 			(pin_names
@@ -696,32 +701,32 @@
 		)
 	)
 	(junction
-		(at 74.93 64.77)
+		(at 127 50.8)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "02f39956-7995-4ed1-a53e-a4f433d55982")
 	)
 	(junction
-		(at 74.93 95.25)
+		(at 127 81.28)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "1b5e3ae0-f9df-42e5-a48f-eca2f7f9ae4e")
 	)
 	(junction
-		(at 74.93 49.53)
+		(at 127 35.56)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5db06023-98e3-4d22-ad54-dc33dd9c71b6")
 	)
 	(junction
-		(at 74.93 80.01)
+		(at 127 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "8da9d97e-2675-4f2b-906f-b42dd0f407f5")
 	)
 	(wire
 		(pts
-			(xy 82.55 64.77) (xy 74.93 64.77)
+			(xy 134.62 50.8) (xy 127 50.8)
 		)
 		(stroke
 			(width 0)
@@ -731,7 +736,7 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 54.61) (xy 62.23 54.61)
+			(xy 95.25 40.64) (xy 114.3 40.64)
 		)
 		(stroke
 			(width 0)
@@ -741,7 +746,7 @@
 	)
 	(wire
 		(pts
-			(xy 74.93 80.01) (xy 74.93 81.28)
+			(xy 127 66.04) (xy 127 67.31)
 		)
 		(stroke
 			(width 0)
@@ -751,7 +756,7 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 49.53) (xy 74.93 49.53)
+			(xy 95.25 35.56) (xy 127 35.56)
 		)
 		(stroke
 			(width 0)
@@ -761,7 +766,7 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 57.15) (xy 59.69 57.15)
+			(xy 95.25 43.18) (xy 111.76 43.18)
 		)
 		(stroke
 			(width 0)
@@ -771,7 +776,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 46.99) (xy 43.18 46.99)
+			(xy 99.06 33.02) (xy 95.25 33.02)
 		)
 		(stroke
 			(width 0)
@@ -781,7 +786,7 @@
 	)
 	(wire
 		(pts
-			(xy 59.69 95.25) (xy 59.69 57.15)
+			(xy 111.76 81.28) (xy 111.76 43.18)
 		)
 		(stroke
 			(width 0)
@@ -791,7 +796,7 @@
 	)
 	(wire
 		(pts
-			(xy 74.93 95.25) (xy 74.93 96.52)
+			(xy 127 81.28) (xy 127 82.55)
 		)
 		(stroke
 			(width 0)
@@ -801,7 +806,7 @@
 	)
 	(wire
 		(pts
-			(xy 62.23 80.01) (xy 62.23 54.61)
+			(xy 114.3 66.04) (xy 114.3 40.64)
 		)
 		(stroke
 			(width 0)
@@ -811,7 +816,7 @@
 	)
 	(wire
 		(pts
-			(xy 64.77 64.77) (xy 74.93 64.77)
+			(xy 116.84 50.8) (xy 127 50.8)
 		)
 		(stroke
 			(width 0)
@@ -821,7 +826,7 @@
 	)
 	(wire
 		(pts
-			(xy 82.55 95.25) (xy 74.93 95.25)
+			(xy 134.62 81.28) (xy 127 81.28)
 		)
 		(stroke
 			(width 0)
@@ -831,7 +836,7 @@
 	)
 	(wire
 		(pts
-			(xy 82.55 49.53) (xy 74.93 49.53)
+			(xy 134.62 35.56) (xy 127 35.56)
 		)
 		(stroke
 			(width 0)
@@ -841,7 +846,7 @@
 	)
 	(wire
 		(pts
-			(xy 43.18 52.07) (xy 64.77 52.07)
+			(xy 95.25 38.1) (xy 116.84 38.1)
 		)
 		(stroke
 			(width 0)
@@ -851,7 +856,7 @@
 	)
 	(wire
 		(pts
-			(xy 74.93 49.53) (xy 74.93 50.8)
+			(xy 127 35.56) (xy 127 36.83)
 		)
 		(stroke
 			(width 0)
@@ -861,7 +866,7 @@
 	)
 	(wire
 		(pts
-			(xy 82.55 80.01) (xy 74.93 80.01)
+			(xy 134.62 66.04) (xy 127 66.04)
 		)
 		(stroke
 			(width 0)
@@ -871,7 +876,7 @@
 	)
 	(wire
 		(pts
-			(xy 59.69 95.25) (xy 74.93 95.25)
+			(xy 111.76 81.28) (xy 127 81.28)
 		)
 		(stroke
 			(width 0)
@@ -881,7 +886,7 @@
 	)
 	(wire
 		(pts
-			(xy 62.23 80.01) (xy 74.93 80.01)
+			(xy 114.3 66.04) (xy 127 66.04)
 		)
 		(stroke
 			(width 0)
@@ -891,7 +896,7 @@
 	)
 	(wire
 		(pts
-			(xy 64.77 64.77) (xy 64.77 52.07)
+			(xy 116.84 50.8) (xy 116.84 38.1)
 		)
 		(stroke
 			(width 0)
@@ -901,7 +906,7 @@
 	)
 	(wire
 		(pts
-			(xy 74.93 64.77) (xy 74.93 66.04)
+			(xy 127 50.8) (xy 127 52.07)
 		)
 		(stroke
 			(width 0)
@@ -911,7 +916,7 @@
 	)
 	(symbol
 		(lib_id "todbot_stuff:Capacitive_Button")
-		(at 82.55 49.53 270)
+		(at 134.62 35.56 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -920,7 +925,7 @@
 		(fields_autoplaced yes)
 		(uuid "2a0df2ce-3141-4763-b6c2-591282bf76d6")
 		(property "Reference" "SW1"
-			(at 88.9 48.2599 90)
+			(at 140.97 34.2899 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -929,7 +934,7 @@
 			)
 		)
 		(property "Value" "Capacitive_Button"
-			(at 88.9 50.7999 90)
+			(at 140.97 36.8299 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -937,8 +942,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "todbot_stuff:Pad-CapTouch-10mm-roundrect"
-			(at 74.93 49.53 0)
+		(property "Footprint" "todbot_stuff:Pad-CapTouch-11_2mm-roundrect"
+			(at 127 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -947,7 +952,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 72.39 49.53 0)
+			(at 124.46 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -956,7 +961,7 @@
 			)
 		)
 		(property "Description" "Capacitive touch pad"
-			(at 82.55 49.53 0)
+			(at 134.62 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -978,7 +983,7 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x05_Pin")
-		(at 38.1 52.07 0)
+		(at 90.17 38.1 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -986,7 +991,7 @@
 		(dnp no)
 		(uuid "47c795bc-4d53-4b8d-865e-0100df9464ab")
 		(property "Reference" "J1"
-			(at 38.735 41.91 0)
+			(at 90.805 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -994,7 +999,7 @@
 			)
 		)
 		(property "Value" "Conn_01x05_Pin"
-			(at 32.258 44.704 0)
+			(at 84.328 30.734 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1002,7 +1007,7 @@
 			)
 		)
 		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical"
-			(at 38.1 52.07 0)
+			(at 90.17 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1011,7 +1016,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 38.1 52.07 0)
+			(at 90.17 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1020,7 +1025,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x05, script generated"
-			(at 38.1 52.07 0)
+			(at 90.17 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1054,7 +1059,7 @@
 	)
 	(symbol
 		(lib_id "todbot_stuff:Capacitive_Button")
-		(at 82.55 64.77 270)
+		(at 134.62 50.8 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1063,7 +1068,7 @@
 		(fields_autoplaced yes)
 		(uuid "4b86639d-89db-4da9-9673-6ed92e2df05d")
 		(property "Reference" "SW2"
-			(at 88.9 63.4999 90)
+			(at 140.97 49.5299 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1072,7 +1077,7 @@
 			)
 		)
 		(property "Value" "Capacitive_Button"
-			(at 88.9 66.0399 90)
+			(at 140.97 52.0699 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1080,8 +1085,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "todbot_stuff:Pad-CapTouch-10mm-roundrect"
-			(at 74.93 64.77 0)
+		(property "Footprint" "todbot_stuff:Pad-CapTouch-11_2mm-roundrect"
+			(at 127 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1090,7 +1095,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 72.39 64.77 0)
+			(at 124.46 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1099,7 +1104,7 @@
 			)
 		)
 		(property "Description" "Capacitive touch pad"
-			(at 82.55 64.77 0)
+			(at 134.62 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1121,7 +1126,7 @@
 	)
 	(symbol
 		(lib_id "todbot_stuff:Capacitive_Button")
-		(at 82.55 80.01 270)
+		(at 134.62 66.04 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1130,7 +1135,7 @@
 		(fields_autoplaced yes)
 		(uuid "5a5a2a63-97a2-45d6-923f-094ea65e3d19")
 		(property "Reference" "SW3"
-			(at 88.9 78.7399 90)
+			(at 140.97 64.7699 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1139,7 +1144,7 @@
 			)
 		)
 		(property "Value" "Capacitive_Button"
-			(at 88.9 81.2799 90)
+			(at 140.97 67.3099 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1147,8 +1152,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "todbot_stuff:Pad-CapTouch-10mm-roundrect"
-			(at 74.93 80.01 0)
+		(property "Footprint" "todbot_stuff:Pad-CapTouch-11_2mm-roundrect"
+			(at 127 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1157,7 +1162,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 72.39 80.01 0)
+			(at 124.46 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1166,7 +1171,7 @@
 			)
 		)
 		(property "Description" "Capacitive touch pad"
-			(at 82.55 80.01 0)
+			(at 134.62 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1188,7 +1193,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 74.93 100.33 0)
+		(at 127 86.36 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1197,7 +1202,7 @@
 		(fields_autoplaced yes)
 		(uuid "6626b142-895f-4f2a-b996-3a6611a0a675")
 		(property "Reference" "R4"
-			(at 77.47 99.0599 0)
+			(at 129.54 85.0899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1206,7 +1211,7 @@
 			)
 		)
 		(property "Value" "1M"
-			(at 77.47 101.5999 0)
+			(at 129.54 87.6299 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1215,7 +1220,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
-			(at 73.152 100.33 90)
+			(at 125.222 86.36 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1224,7 +1229,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 74.93 100.33 0)
+			(at 127 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1233,7 +1238,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 74.93 100.33 0)
+			(at 127 86.36 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1258,7 +1263,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 46.99 46.99 90)
+		(at 99.06 33.02 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1266,7 +1271,7 @@
 		(dnp no)
 		(uuid "682c3247-e3fd-45f6-83ce-175927cda50c")
 		(property "Reference" "#PWR05"
-			(at 53.34 46.99 0)
+			(at 105.41 33.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1275,7 +1280,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 49.784 43.434 0)
+			(at 101.854 29.464 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1283,7 +1288,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 46.99 46.99 0)
+			(at 99.06 33.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1292,7 +1297,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 46.99 46.99 0)
+			(at 99.06 33.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1301,7 +1306,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 46.99 46.99 0)
+			(at 99.06 33.02 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1323,7 +1328,7 @@
 	)
 	(symbol
 		(lib_id "todbot_stuff:Capacitive_Button")
-		(at 82.55 95.25 270)
+		(at 134.62 81.28 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1332,7 +1337,7 @@
 		(fields_autoplaced yes)
 		(uuid "81628a3e-bfc6-4011-bb7f-566d6334dfb0")
 		(property "Reference" "SW4"
-			(at 88.9 93.9799 90)
+			(at 140.97 80.0099 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1341,7 +1346,7 @@
 			)
 		)
 		(property "Value" "Capacitive_Button"
-			(at 88.9 96.5199 90)
+			(at 140.97 82.5499 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1349,8 +1354,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "todbot_stuff:Pad-CapTouch-10mm-roundrect"
-			(at 74.93 95.25 0)
+		(property "Footprint" "todbot_stuff:Pad-CapTouch-11_2mm-roundrect"
+			(at 127 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1359,7 +1364,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 72.39 95.25 0)
+			(at 124.46 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1368,7 +1373,7 @@
 			)
 		)
 		(property "Description" "Capacitive touch pad"
-			(at 82.55 95.25 0)
+			(at 134.62 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1390,7 +1395,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 74.93 104.14 0)
+		(at 127 90.17 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1398,7 +1403,7 @@
 		(dnp no)
 		(uuid "9b27197f-d472-4ca7-a7f0-82405c39b16d")
 		(property "Reference" "#PWR04"
-			(at 74.93 110.49 0)
+			(at 127 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1407,7 +1412,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 78.486 106.934 0)
+			(at 130.556 92.964 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1415,7 +1420,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 74.93 104.14 0)
+			(at 127 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1424,7 +1429,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 74.93 104.14 0)
+			(at 127 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1433,7 +1438,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 74.93 104.14 0)
+			(at 127 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1455,7 +1460,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 74.93 73.66 0)
+		(at 127 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1463,7 +1468,7 @@
 		(dnp no)
 		(uuid "b42e0a41-4e7a-4f92-8a5d-784c534d2e5d")
 		(property "Reference" "#PWR02"
-			(at 74.93 80.01 0)
+			(at 127 66.04 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1472,7 +1477,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 78.486 76.454 0)
+			(at 130.556 62.484 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1480,7 +1485,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 74.93 73.66 0)
+			(at 127 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1489,7 +1494,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 74.93 73.66 0)
+			(at 127 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1498,7 +1503,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 74.93 73.66 0)
+			(at 127 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1520,7 +1525,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 74.93 54.61 0)
+		(at 127 40.64 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1529,7 +1534,7 @@
 		(fields_autoplaced yes)
 		(uuid "c38032de-7471-49b1-845c-869676998f05")
 		(property "Reference" "R1"
-			(at 77.47 53.3399 0)
+			(at 129.54 39.3699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1538,7 +1543,7 @@
 			)
 		)
 		(property "Value" "1M"
-			(at 77.47 55.8799 0)
+			(at 129.54 41.9099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1547,7 +1552,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
-			(at 73.152 54.61 90)
+			(at 125.222 40.64 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1556,7 +1561,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 74.93 54.61 0)
+			(at 127 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1565,7 +1570,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 74.93 54.61 0)
+			(at 127 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1590,7 +1595,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 74.93 85.09 0)
+		(at 127 71.12 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1599,7 +1604,7 @@
 		(fields_autoplaced yes)
 		(uuid "d49e6760-9a58-463d-b940-30279b0a3c6d")
 		(property "Reference" "R3"
-			(at 77.47 83.8199 0)
+			(at 129.54 69.8499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1608,7 +1613,7 @@
 			)
 		)
 		(property "Value" "1M"
-			(at 77.47 86.3599 0)
+			(at 129.54 72.3899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1617,7 +1622,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
-			(at 73.152 85.09 90)
+			(at 125.222 71.12 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1626,7 +1631,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 74.93 85.09 0)
+			(at 127 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1635,7 +1640,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 74.93 85.09 0)
+			(at 127 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1660,7 +1665,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:MountingHole")
-		(at 33.02 101.6 0)
+		(at 85.09 87.63 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -1669,7 +1674,7 @@
 		(fields_autoplaced yes)
 		(uuid "d847f618-73d2-4ebf-9b84-cd1fcc8f6e06")
 		(property "Reference" "H2"
-			(at 35.56 100.3299 0)
+			(at 87.63 86.3599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1678,7 +1683,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 35.56 102.8699 0)
+			(at 87.63 88.8999 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1687,7 +1692,7 @@
 			)
 		)
 		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5"
-			(at 33.02 101.6 0)
+			(at 85.09 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1696,7 +1701,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 33.02 101.6 0)
+			(at 85.09 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1705,7 +1710,7 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 33.02 101.6 0)
+			(at 85.09 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1724,7 +1729,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 74.93 58.42 0)
+		(at 127 44.45 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1732,7 +1737,7 @@
 		(dnp no)
 		(uuid "e646715f-58cb-46c2-bd4c-2e7538857d1f")
 		(property "Reference" "#PWR01"
-			(at 74.93 64.77 0)
+			(at 127 50.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1741,7 +1746,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 77.978 61.214 0)
+			(at 130.048 47.244 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1749,7 +1754,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 74.93 58.42 0)
+			(at 127 44.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1758,7 +1763,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 74.93 58.42 0)
+			(at 127 44.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1767,7 +1772,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 74.93 58.42 0)
+			(at 127 44.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1789,7 +1794,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 74.93 88.9 0)
+		(at 127 74.93 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1797,7 +1802,7 @@
 		(dnp no)
 		(uuid "e8a5a96f-ff5d-4dde-8875-d8e63d67bdbb")
 		(property "Reference" "#PWR03"
-			(at 74.93 95.25 0)
+			(at 127 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1806,7 +1811,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 78.486 91.694 0)
+			(at 130.556 77.724 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1814,7 +1819,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 74.93 88.9 0)
+			(at 127 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1823,7 +1828,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 74.93 88.9 0)
+			(at 127 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1832,7 +1837,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 74.93 88.9 0)
+			(at 127 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1854,7 +1859,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 74.93 69.85 0)
+		(at 127 55.88 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1863,7 +1868,7 @@
 		(fields_autoplaced yes)
 		(uuid "eb01ada5-7cd8-4d9f-9f2e-339e12eb81e6")
 		(property "Reference" "R2"
-			(at 77.47 68.5799 0)
+			(at 129.54 54.6099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1872,7 +1877,7 @@
 			)
 		)
 		(property "Value" "1M"
-			(at 77.47 71.1199 0)
+			(at 129.54 57.1499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1881,7 +1886,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
-			(at 73.152 69.85 90)
+			(at 125.222 55.88 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1890,7 +1895,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 74.93 69.85 0)
+			(at 127 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1899,7 +1904,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 74.93 69.85 0)
+			(at 127 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1924,7 +1929,7 @@
 	)
 	(symbol
 		(lib_id "Mechanical:MountingHole")
-		(at 33.02 95.25 0)
+		(at 85.09 81.28 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -1933,7 +1938,7 @@
 		(fields_autoplaced yes)
 		(uuid "fc712ecb-8599-44fe-ac22-abfbad7c7391")
 		(property "Reference" "H1"
-			(at 35.56 93.9799 0)
+			(at 87.63 80.0099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1942,7 +1947,7 @@
 			)
 		)
 		(property "Value" "MountingHole"
-			(at 35.56 96.5199 0)
+			(at 87.63 82.5499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1951,7 +1956,7 @@
 			)
 		)
 		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5"
-			(at 33.02 95.25 0)
+			(at 85.09 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1960,7 +1965,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 33.02 95.25 0)
+			(at 85.09 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1969,7 +1974,7 @@
 			)
 		)
 		(property "Description" "Mounting Hole without connection"
-			(at 33.02 95.25 0)
+			(at 85.09 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
