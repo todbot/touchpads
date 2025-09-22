@@ -69,5 +69,5 @@ are relatively big and not very heat sensitive.
 - [AN2934 - Capacitive Touch Sensor Design Guide (pdf)](https://ww1.microchip.com/downloads/en/Appnotes/Capacitive-Touch-Sensor-Design-Guide-DS00002934-B.pdf)
 - [QTAN007 - Buttons, Sliders and Wheels - Sensor Design Guide (pdf)](https://www.mouser.com/pdfDocs/QTouch_QTAN0079.pdf)
 - [AT02259: QTouch Schematic and Layout Checklist (pdf)](http://ww1.microchip.com/downloads/en/appnotes/atmel-42094-qtouch-schematic-and-layout-checklist_applicationnote_at02259.pdf)
-- [slider generator](https://cooltech.zone/tangara/labs/touchwheel-electrode-tool/)
 - [SLAA891B: Automating Capacitive Touch Sensor PCB layouts with OpenSCAD Ti AppNote (pdf)](https://www.ti.com/lit/an/slaa891b/slaa891b.pdf?ts=1725369981627)
+- [slider generator](https://cooltech.zone/tangara/labs/touchwheel-electrode-tool/)
