@@ -1,13 +1,23 @@
-# Touchwheels
+# Touchpads and Touchwheels
 
-Some capacitive sense rotary touchwheels.  
+
+Some capacitive sense touch sensors: buttons an drotary touchwheels.
+
+## Touchpads
+
+### Touchpad boards
+
+* buttons4x0 - Four capacitive touch buttons for use with breadboards or in a project
+
+
+### Touchwheels
 
 These work by using only three capactive touch pads in a specific interleaved 
 geometry and measuring the relative ratio of analog capacitive touch values 
 between the pads to compute a distance along the slider. 
 
 
-### Touchwheels made so far:
+#### Touchwheel boards made so far:
 
 * TouchWheelSAO -- [Touchwheel SAO as part of  Hackaday Supercon 2024 badge](https://github.com/todbot/TouchwheelSAO)
 
@@ -22,7 +32,7 @@ between the pads to compute a distance along the slider.
   
   <a href="https://github.com/todbot/picoslidertoy"><img width=500 src="https://raw.githubusercontent.com/todbot/picoslidertoy/main/docs/picoslidertoy_photo1.jpg"></a>
 
-### Demos:
+#### Touchwheel Demos:
 
 There are several examples on how to use the touchwheel:
 
@@ -37,7 +47,7 @@ There are several examples on how to use the touchwheel:
 
 - more demos coming!
 
-### What's in Tindie touchwheel0 kit: 
+#### What's in Tindie touchwheel0 kit: 
 
 The [touchwheel0 kit](https://www.tindie.com/products/todbot/touchwheel0-capacitive-touch-wheel/)
 on Tindie comes with:
@@ -50,7 +60,7 @@ It makes a pretty good "first SMD soldering" exercise as the 0805 resistors
 are relatively big and not very heat sensitive. 
 
 
-### Demo videos:
+#### Demo videos:
 
 - demo dual:
   [(click to view on youtube)](https://www.youtube.com/watch?v=Db7S75eE-G8)
