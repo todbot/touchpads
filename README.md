@@ -1,14 +1,17 @@
 # Touchpads and Touchwheels
 
 
-Some capacitive sense touch sensors: buttons an drotary touchwheels.
+Some capacitive sense touch sensors: buttons and touchwheels
 
 ## Touchpads
 
-Touchpads are capacitive sensing button inputs that just consist of a copper
-pad and (usually) 1M pull-down resistor.  Code on a microcontroller repeatedly
-charges and times the discharge rate of the pad.  The discharge time is changed 
-when a finger is close to the pad. This change can be used to detect a button press. 
+Touchpads are capacitive sensing button inputs that consist of a copper
+pad and (usually) 1M pull-down resistor, both hooked up to a microcontroller GPIO pin.
+Code on a microcontroller repeatedly charges and times the discharge rate of the pad.
+The discharge time changes when a finger is close to the pad. 
+This change can be used to detect a button press. 
+The CircuitPython [`touchio`](https://circuitpython-github-jepler.readthedocs.io/en/latest/shared-bindings/touchio/index.html) library and the Arduino library [`TouchyTouch`](https://github.com/todbot/TouchyTouch)
+are two ways of using these capacative touch pads
 
 ### Touchpad boards
 
