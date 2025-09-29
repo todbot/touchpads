@@ -5,18 +5,22 @@
 import time
 import board
 import touchio
-import neopixel
+import neopixel   # "circup install neopixel"
 
-touch_pins = (board.GP18, board.GP19, board.GP20, board.GP21)
+led_pin = board.GP22                   
+touch_pins = (board.GP0, board.GP1, board.GP2, board.GP3)
 touchins = []
 for p in touch_pins:
     touchin = touchio.TouchIn(p)
     touchins.append(touchin)
 
+leds = neopixel.NeoPixel(led_pin, len(touch_pins), brightness=0.1)
+
 while True:
 
-    for touchpad in touchins:
+    for i, touchpad in enumerate(touchins):
         print("%d " % touchpad.value, end='')
+        leds[i] = 0xffffff if touchpad.value else 0x000000
     print()
-
-    time.sleep(0.01)
+    
+    time.sleep(0.05)
