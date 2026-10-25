@@ -16,7 +16,13 @@ are two ways of using these capacative touch pads
 ### Touchpad boards
 
 * buttons4x0 - Four 11 mm capacitive touch buttons for use with breadboards or in a project
-   <img width=300 src="./docs/buttons4x0_render_front.jpg"><img width=300 src="./docs/buttons4x0_render_back.jpg">
+  
+  https://github.com/user-attachments/assets/d40d3ede-4ee4-4309-8d3a-04f324b11f05
+
+  <img width=300 src="./docs/buttons4x0_render_front.jpg"><img width=300 src="./docs/buttons4x0_render_back.jpg">
+
+
+
 
 
 ## Touchwheels
