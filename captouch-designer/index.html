@@ -1,0 +1,933 @@
+<title>Captouch Slider Designer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a bench — parameter rail on the left, the board under inspection on the right, measurements and export beneath it */
+:root{
+  --bg:#e7eae4; --panel:#f5f6f2; --ink:#17201b; --muted:#59645c; --line:#cbd2c6;
+  --accent:#a3551d; --accent-ink:#fffaf4;
+  --board:#0f3b31; --board-edge:#0b2c24; --grid:rgba(200,235,215,.09); --on-board:#f1ede3;
+  --ok:#2c7a4c; --warn:#a86300; --info:#376a9f;
+  --ui:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --mono:"Martian Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1311; --panel:#161b18; --ink:#e1e6df; --muted:#8d998f; --line:#28302b;
+  --accent:#de9459; --accent-ink:#1b0f05;
+  --board:#103b31; --board-edge:#0a221c; --grid:rgba(200,235,215,.08); --on-board:#f1ede3;
+  --ok:#62c18c; --warn:#e2a23c; --info:#7eaadb; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1311; --panel:#161b18; --ink:#e1e6df; --muted:#8d998f; --line:#28302b;
+  --accent:#de9459; --accent-ink:#1b0f05;
+  --board:#103b31; --board-edge:#0a221c; --grid:rgba(200,235,215,.08); --on-board:#f1ede3;
+  --ok:#62c18c; --warn:#e2a23c; --info:#7eaadb; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--ui)}
+.wrap{max-width:1380px;margin:0 auto;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 28px;border-bottom:1px solid var(--line);padding-bottom:16px}
+h1{font:700 2rem/1 var(--ui);letter-spacing:-.01em;margin:0;text-wrap:balance}
+.sub{margin:8px 0 0;color:var(--muted);max-width:64ch}
+h2{font:600 .78rem var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel);flex-wrap:wrap}
+.seg button{font:600 .82rem var(--ui);letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button:focus-visible,.btn:focus-visible,input:focus-visible,#board:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg.big button{padding:9px 20px;font-size:.95rem}
+.app{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:880px){.app{grid-template-columns:minmax(0,1fr)}aside.controls{order:2}}
+aside.controls{display:flex;flex-direction:column;gap:22px}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;min-width:0}
+legend{font:600 .78rem var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);padding:0;margin-bottom:10px}
+.field{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 8px;align-items:center}
+.field>label{font-weight:500}
+.field input[type=range]{grid-column:1/-1;width:100%;margin:0;accent-color:var(--accent)}
+.field .hint{grid-column:1/-1;font-size:.8rem;color:var(--muted);margin-top:-2px}
+.num{display:flex;align-items:baseline;gap:5px}
+.num input{width:5.4em;font:500 .8rem var(--mono);text-align:right;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:3px 6px}
+.unit{font:400 .72rem var(--mono);color:var(--muted);min-width:3.6em}
+.optrow{display:flex;flex-direction:column;gap:5px}
+.optrow>span{font-weight:500}
+main{display:flex;flex-direction:column;gap:18px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.stage{overflow:hidden}
+.stage-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line)}
+.dims{font:500 .82rem var(--mono);font-variant-numeric:tabular-nums}
+#board{display:block;width:100%;height:auto;max-height:58vh;background:var(--board-edge);touch-action:none;cursor:crosshair}
+#board .pcb{fill:var(--board)}
+#board .grid{stroke:var(--grid);fill:none}
+#board .track{stroke:var(--on-board);stroke-opacity:.35;fill:none;stroke-dasharray:4 4}
+#board .lbl{fill:#10231c;font-family:var(--mono);font-weight:500;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+#board .finger{fill:var(--on-board);fill-opacity:.16;stroke:var(--on-board);stroke-dasharray:3 3}
+#board .est{fill:none;stroke:var(--on-board)}
+#board .scale{stroke:var(--on-board);stroke-opacity:.7}
+#board .scale-t{fill:var(--on-board);fill-opacity:.7;font-family:var(--mono)}
+.readout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 24px;padding:12px 14px;border-top:1px solid var(--line)}
+@media (max-width:640px){.readout{grid-template-columns:minmax(0,1fr)}}
+.bars{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:4.6em minmax(0,1fr) 5.6em;gap:8px;align-items:center;font:400 .74rem var(--mono);font-variant-numeric:tabular-nums}
+.bar-row .tag{display:flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:2px;flex:none}
+.bar{height:8px;background:color-mix(in srgb,var(--ink) 9%,transparent);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%}
+.bar-row .v{text-align:right}
+.estbox{display:flex;flex-direction:column;gap:4px;font-size:.92rem}
+.estbox .big{font:500 1.05rem var(--mono);font-variant-numeric:tabular-nums}
+.estbox .muted{color:var(--muted);font-size:.85rem}
+.section{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.export-grid{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end}
+.namefield{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 260px}
+.namefield input{font:500 .82rem var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:6px 8px;width:100%}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:600 .9rem var(--ui);letter-spacing:.03em;border-radius:5px;padding:8px 14px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:hover{filter:brightness(1.06)}
+.note{margin:0;color:var(--muted);font-size:.88rem;max-width:90ch}
+.note code{font:400 .78rem var(--mono);color:var(--ink)}
+.analysis{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:16px;align-items:start}
+@media (max-width:760px){.analysis{grid-template-columns:minmax(0,1fr)}}
+.chartbox{overflow-x:auto}
+#chart{display:block;width:100%;min-width:420px;height:auto}
+#chart text{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+#chart .ax{stroke:var(--line)}
+#chart .zero{stroke:var(--muted);stroke-opacity:.6}
+#chart .shade{fill:var(--ink);fill-opacity:.05}
+#chart .err{fill:none;stroke:var(--accent);stroke-width:1.6}
+#chart .ttl{fill:var(--ink);font-family:var(--ui);font-size:12px;font-weight:600}
+dl.stats{margin:0;display:flex;flex-direction:column;gap:10px}
+dl.stats div{display:flex;flex-direction:column;border-bottom:1px solid var(--line);padding-bottom:8px}
+dl.stats dt{font-size:.8rem;color:var(--muted)}
+dl.stats dd{margin:0;font:500 1rem var(--mono);font-variant-numeric:tabular-nums}
+ul.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+ul.checks li{display:grid;grid-template-columns:4.4em minmax(0,1fr);gap:10px;align-items:baseline}
+.chip{font:600 .68rem var(--ui);letter-spacing:.1em;text-transform:uppercase;text-align:center;border-radius:3px;padding:2px 0;border:1px solid currentColor}
+.chip.ok{color:var(--ok)} .chip.warn{color:var(--warn)} .chip.info{color:var(--info)}
+.src{color:var(--muted);font-size:.82rem;white-space:nowrap}
+.two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px}
+@media (max-width:980px){.two{grid-template-columns:minmax(0,1fr)}}
+ul.remind{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px;color:var(--ink)}
+ul.remind li::marker{color:var(--accent)}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:6px;font-weight:500;z-index:20;max-width:calc(100% - 32px)}
+#copybox{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px}
+#copybox .inner{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;width:min(760px,100%);display:flex;flex-direction:column;gap:10px}
+#copybox textarea{width:100%;height:50vh;font:400 .72rem var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Captouch Slider Designer</h1>
+      <p class="sub">Interdigitated self-capacitance sliders, arc sliders and wheels. Tune the tines, drag a virtual finger across the copper, then export SVG or a KiCad footprint.</p>
+    </div>
+    <div class="seg big" id="typeSeg" role="group" aria-label="Sensor type"></div>
+  </header>
+
+  <div class="app">
+    <aside class="controls" id="controls">
+      <fieldset id="fs-el"><legend>Electrode pattern</legend></fieldset>
+      <fieldset id="fs-shape"><legend>Shape</legend></fieldset>
+      <fieldset id="fs-sim"><legend>Finger model</legend></fieldset>
+    </aside>
+
+    <main>
+      <section class="panel stage">
+        <div class="stage-head">
+          <span class="dims" id="dims"></span>
+          <div class="seg" id="viewSeg" role="group" aria-label="Preview colors"></div>
+        </div>
+        <svg id="board" tabindex="0" aria-label="Electrode preview. Drag to move the finger; arrow keys move it along the travel." xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="readout">
+          <div class="bars" id="bars"></div>
+          <div class="estbox" id="estbox"></div>
+        </div>
+      </section>
+
+      <section class="panel section">
+        <h2>Export</h2>
+        <div class="export-grid">
+          <div class="namefield">
+            <label for="fpname">Footprint name</label>
+            <input id="fpname" spellcheck="false" autocomplete="off">
+          </div>
+          <div class="optrow"><span>Solder mask</span><div class="seg" id="maskSeg" role="group" aria-label="Solder mask"></div></div>
+        </div>
+        <div class="btns">
+          <button class="btn primary" id="saveSvg">Save SVG</button>
+          <button class="btn primary" id="saveFp">Save KiCad footprint</button>
+          <button class="btn" id="copySvg">Copy SVG</button>
+          <button class="btn" id="copyFp">Copy footprint</button>
+        </div>
+        <p class="note" id="expNote"></p>
+      </section>
+
+      <section class="panel section">
+        <h2>Finger sweep</h2>
+        <div class="analysis">
+          <div class="chartbox"><svg id="chart" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Channel signals and position error along the travel"></svg></div>
+          <dl class="stats" id="stats"></dl>
+        </div>
+        <p class="note">A disk the size of the finger model slides along the centerline. Each channel's signal is the copper area under the disk; the position estimate is the centroid of those areas (vector sum for wheels and split-end sliders). Shaded ends are where the finger hangs off the sensor.</p>
+      </section>
+
+      <section class="panel section two">
+        <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+          <h2>Design checks</h2>
+          <ul class="checks" id="checks"></ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+          <h2>Layout reminders</h2>
+          <ul class="remind" id="remind"></ul>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="copybox" hidden>
+  <div class="inner">
+    <strong>Clipboard isn't available here. Select all and copy:</strong>
+    <textarea id="copytext" readonly></textarea>
+    <div class="btns"><button class="btn primary" id="copyClose">Close</button></div>
+  </div>
+</div>
+
+<script id="geo">
+/* ==========================================================================
+   GEOMETRY ENGINE
+   Pure functions, no DOM. build(params) turns the UI parameters into copper
+   polygons (in mm) plus everything the simulator and exporters need.
+
+   Coordinate model used throughout:
+     (u, v) "strip space": u runs along the direction of travel, v runs
+       across the sensor width (0 .. W).
+       - linear slider: u in mm (0 .. L)
+       - arc / wheel:   u in DEGREES of travel (0 .. sweep or 360),
+                        v in mm of radius above the inner radius
+     (x, y) "board space": mm, SVG/KiCad orientation (y points DOWN),
+       origin at the slider center or the arc/wheel center.
+     map(u, v) converts strip space to board space. Angles are measured
+     from 12 o'clock, clockwise positive.
+
+   Every sensor is a strip cut by N (or N-1) zigzag "boundaries". The copper
+   between two neighbouring boundaries is one electrode region. Wheels wrap
+   the strip around 360 deg so the last region meets the first.
+   ========================================================================== */
+/* ---------- geometry engine (no DOM) ---------- */
+// Small math helpers.
+var D2R=Math.PI/180, R2D=180/Math.PI;
+// Always-positive modulo (JS % keeps the sign of a).
+function mod(a,m){return ((a%m)+m)%m}
+function clamp(v,a,b){return Math.min(b,Math.max(a,v))}
+// Fold an angle difference into (-180, 180].
+function wrap180(d){d=mod(d,360);return d>180?d-360:d}
+
+/* offsetPL(pts, d)
+   Offset an open polyline sideways by distance d (mm) using MITER joins.
+   Positive d moves toward the polyline's LEFT normal (-dy, dx).
+   This is how clearance is made: each shared boundary is offset +c/2 for
+   the electrode on one side and -c/2 for the electrode on the other, giving
+   a gap of exactly c along straight parts and >= c at corners.
+   Miter joins are correct here because both electrodes are being shrunk
+   (eroded) away from the boundary. Very sharp turns are limited by the
+   0.08 floor on the miter denominator so points can't shoot off to infinity.
+   Endpoints are offset perpendicular to their own segment, which is why
+   boundaryUV() starts and ends every boundary with a short segment that is
+   perpendicular to the sensor edge. */
+function offsetPL(pts,d){
+  // Drop duplicate consecutive points (zero-length segments have no normal).
+  var p=[pts[0]];
+  for(var i=1;i<pts.length;i++){var q=p[p.length-1];if(Math.hypot(pts[i][0]-q[0],pts[i][1]-q[1])>1e-9)p.push(pts[i]);}
+  // Unit left-normal of every segment.
+  var n=p.length,nr=[];
+  for(i=0;i<n-1;i++){var dx=p[i+1][0]-p[i][0],dy=p[i+1][1]-p[i][1],L=Math.hypot(dx,dy);nr.push([-dy/L,dx/L]);}
+  // Interior vertices: miter point = d * (n1 + n2) / (1 + n1.n2),
+  // i.e. the intersection of the two offset segments.
+  var out=[];
+  for(i=0;i<n;i++){
+    if(i===0)out.push([p[0][0]+d*nr[0][0],p[0][1]+d*nr[0][1]]);
+    else if(i===n-1)out.push([p[i][0]+d*nr[i-1][0],p[i][1]+d*nr[i-1][1]]);
+    else{var a=nr[i-1],b=nr[i],den=Math.max(0.08,1+a[0]*b[0]+a[1]*b[1]);
+      out.push([p[i][0]+d*(a[0]+b[0])/den,p[i][1]+d*(a[1]+b[1])/den]);}
+  }
+  return out;
+}
+
+/* build(p) -> geometry object
+   p is the UI parameter object (see DEF in the UI script):
+     type 'linear' | 'arc' | 'wheel', n channels, tines, overlap (% of pitch),
+     clr clearance mm, tip tine-tip width mm, L/W (linear), aRo/aRi/sweep/
+     aCenter (arc), wRo/wRi/rot (wheel), ends 'split'|'separate',
+     split 'last'|'first', pad end padding mm.
+   Returns polygons per channel, bounding box, the map() function, the
+   position estimator and assorted numbers used by checks and export. */
+function build(p){
+  // warn collects codes that the UI turns into design-check messages.
+  var N=p.n|0,T=p.tines|0,c=+p.clr,warn=[];
+  var type=p.type,cyclic=type==='wheel',polar=type!=='linear';
+  // --- 1. Choose the strip -> board mapping -------------------------------
+  // W  = strip width in mm (slider width, or ring width ro-ri)
+  // Lu = strip length in u units (mm for linear, degrees for arc/wheel)
+  // uScale = mm per u unit, measured on the finger path (mid radius).
+  //          Used to express angular quantities as physical millimetres.
+  // a0 = absolute angle (deg) where u = 0 sits.
+  var W,Lu,ri=0,ro=0,a0=0,uScale=1,map;
+  if(!polar){W=+p.W;Lu=+p.L;map=function(u,v){return [u-Lu/2,v-W/2]};}
+  else{
+    ro=cyclic?+p.wRo:+p.aRo; ri=cyclic?+p.wRi:+p.aRi;
+    if(ri>ro-2){ri=Math.max(1,ro-2);warn.push('innerClamp');}
+    W=ro-ri; uScale=(ro+ri)/2*D2R;
+    // Wheel: rotate so CH0's centre lands on p.rot. Arc: centre the sweep on p.aCenter.
+    if(cyclic){Lu=360;a0=p.rot-180/N;}else{Lu=+p.sweep;a0=p.aCenter-Lu/2;}
+    // Polar map: angle from 12 o'clock clockwise; y is negated because SVG y points down.
+    map=function(u,v){var a=(a0+u)*D2R,r=ri+v;return [r*Math.sin(a),-r*Math.cos(a)]};
+  }
+  // --- 2. Where the boundaries go -------------------------------------------
+  // split: one channel appears as a half-width region at BOTH ends of a
+  //   linear/arc slider (Atmel "split the highest channel", TI half elements).
+  //   That makes the strip behave like a wheel cut open, so it can use the
+  //   same vector-sum position estimate.
+  // padU: end padding converted to u units (solid copper before the first tines).
+  var split=!cyclic&&p.ends==='split';
+  var padU=cyclic?0:p.pad/uScale;
+  if(padU>Lu*0.3){padU=Lu*0.3;warn.push('padClamp');}
+  // P0      = element pitch in u units (distance between boundary centres).
+  // bounds  = u position of the centre of each zigzag boundary.
+  // regions = electrode pieces: l/r are indexes into bounds (null = strip end),
+  //           ch = channel number, j = order along the strip.
+  // chAt[j] = which channel sits at position j along the strip (for the estimator).
+  var P0,bounds=[],regions=[],chAt=[],j,k;
+  // Wheel: N+1 boundaries at 0, P0, ... 360 (the last one equals the first,
+  // shifted a full turn) so region k is always between bounds[k] and bounds[k+1].
+  if(cyclic){P0=360/N;for(k=0;k<=N;k++)bounds.push(k*P0);for(k=0;k<N;k++)regions.push({l:k,r:k+1,ch:k,j:k});}
+  // Split ends: N boundaries, N+1 regions. Regions 0 and N are the two halves
+  // of the same channel; the others are full width. Region centres sit at
+  // padU + j*P0, so each half-region is P0/2 wide (plus padding).
+  else if(split){
+    P0=(Lu-2*padU)/N;for(k=0;k<N;k++)bounds.push(padU+P0/2+k*P0);
+    for(j=0;j<=N;j++){var ch=p.split==='first'?(j%N):((j===0||j===N)?N-1:j-1);regions.push({l:j===0?null:j-1,r:j===N?null:j,ch:ch,j:j});if(j<N)chAt[j]=ch;}
+  // Separate ends: N-1 boundaries, N regions, end regions are half width
+  // (plus padding) and each channel appears once.
+  }else{
+    P0=(Lu-2*padU)/(N-1);for(k=0;k<N-1;k++)bounds.push(padU+(k+0.5)*P0);
+    for(j=0;j<N;j++){regions.push({l:j===0?null:j-1,r:j===N-1?null:j,ch:j,j:j});chAt[j]=j;}
+  }
+  // --- 3. Zigzag shape --------------------------------------------------------
+  // h    = tine length (u units): how far the zigzag swings either side of the
+  //        boundary centre. h close to P0 means long interleaved tines and only
+  //        a thin solid "spine" (P0 - h) down the middle of each element.
+  // step = spacing in v between zigzag vertices (T vertices across width W).
+  var h=p.overlap/100*P0, step=W/(T-1);
+  // ft = length of the flat placed at each tine tip, in the BOUNDARY (before
+  // clearance). Offsetting by c/2 shortens a convex tip's flat by about
+  // c*(1-sin)/cos of the tine slope, so we add that back: the finished copper
+  // tip then comes out at the user's tip width. ca/cb = cos/sin of the slope.
+  var du=h*uScale,len=Math.hypot(du,step),ca=du/len,cb=step/len;
+  var ft=+p.tip+c*(1-cb)/ca;
+  if(ft>step*0.85){ft=step*0.85;warn.push('tinesDense');}
+  // ef = flat length at the two outer edges (v=0 and v=W). It must be at least
+  // ~c so the offset boundary still meets the edge instead of poking past it
+  // (offsetPL offsets endpoints perpendicular to the first/last segment).
+  var ef=Math.max(ft/2,c*1.2);if(ef>step*0.45)ef=step*0.45;
+
+  /* boundaryUV(x): one zigzag boundary centred at u = x, as (u,v) points
+     ordered from v=0 to v=W. Vertex j alternates between x-h/2 and x+h/2,
+     and each vertex is widened into a short flat along v (the tine tip).
+     Every boundary uses the same phase, so all elements are congruent.
+     With T vertices there are T-1 diagonal segments (TI's "tines" count). */
+  function boundaryUV(x){
+    var pts=[];
+    for(var j=0;j<T;j++){
+      var u=x+(j%2===0?-h/2:h/2),v=j*step,lo=v-ft/2,hi=v+ft/2;
+      if(j===0){lo=0;hi=ef;} if(j===T-1){lo=W-ef;hi=W;}
+      pts.push([u,lo],[u,hi]);
+    }
+    return pts;
+  }
+  /* toCart(uv): map a (u,v) polyline to board space. For arc/wheel, a straight
+     segment in (u,v) is a spiral on the board, so it is subdivided until each
+     piece is <= 0.4 mm long and <= 2 deg of travel. Linear sliders need no
+     subdivision. */
+  function toCart(uv){
+    var out=[map(uv[0][0],uv[0][1])];
+    for(var i=1;i<uv.length;i++){
+      var u0=uv[i-1][0],v0=uv[i-1][1],u1=uv[i][0],v1=uv[i][1],n=1;
+      if(polar){var dU=Math.abs(u1-u0),r=ri+Math.max(v0,v1);n=Math.max(1,Math.ceil(dU*D2R*r/0.4),Math.ceil(dU/2));}
+      for(var s=1;s<=n;s++){var t=s/n;out.push(map(u0+(u1-u0)*t,v0+(v1-v0)*t));}
+    }
+    return out;
+  }
+  // --- 4. Which side is "+u"? -------------------------------------------------
+  // offsetPL offsets toward the left normal. Whether "left" means +u or -u
+  // depends on the mapping (linear vs clockwise polar flip it), so measure it
+  // numerically once: sgn = +1 if the left normal of a +v polyline points to +u.
+  var pA=map(Lu/2,W/2),pU=map(Lu/2+1e-3,W/2),pV=map(Lu/2,W/2+1e-3);
+  var sgn=Math.sign(-(pV[1]-pA[1])*(pU[0]-pA[0])+(pV[0]-pA[0])*(pU[1]-pA[1]))||1;
+  // Every boundary as a board-space polyline (before clearance).
+  var Bc=bounds.map(function(x){return toCart(boundaryUV(x))});
+  // Board point -> angle in our convention (12 o'clock = 0, clockwise).
+  function ang(pt){return Math.atan2(pt[0],-pt[1])*R2D}
+  // Push a point radially onto radius r (cleans up tiny offset errors at ring edges).
+  function setR(pt,r){var L=Math.hypot(pt[0],pt[1]);return [pt[0]*r/L,pt[1]*r/L]}
+  // Intermediate points (endpoints excluded) along a circle of radius r from
+  // angle a1 to a2. dir=+1 goes clockwise (increasing u), -1 counter-clockwise.
+  function arcPts(r,a1,a2,dir){
+    var d=dir>0?mod(a2-a1,360):-mod(a1-a2,360),n=Math.max(1,Math.ceil(Math.abs(d)/1.2)),out=[];
+    for(var i=1;i<n;i++){var aa=(a1+d*i/n)*D2R;out.push([r*Math.sin(aa),-r*Math.cos(aa)]);}
+    return out;
+  }
+  // --- 5. Assemble each region's copper polygon -------------------------------
+  // Left edge  = left boundary offset toward +u by c/2   (or the strip start)
+  // Right edge = right boundary offset toward -u by c/2  (or the strip end)
+  // Polygon = left edge (v 0->W), outer edge, right edge reversed (v W->0),
+  // inner edge. For polar shapes the outer/inner edges are arcs; for the
+  // linear slider they are the straight closing segments.
+  var polys=[],minSpine=Infinity;
+  regions.forEach(function(rg){
+    var L=rg.l!=null?offsetPL(Bc[rg.l],sgn*c/2):toCart([[0,0],[0,W]]);
+    var R=rg.r!=null?offsetPL(Bc[rg.r],-sgn*c/2):toCart([[Lu,0],[Lu,W]]);
+    var pts;
+    if(polar){
+      L[0]=setR(L[0],ri);L[L.length-1]=setR(L[L.length-1],ro);
+      R[0]=setR(R[0],ri);R[R.length-1]=setR(R[R.length-1],ro);
+      pts=L.concat(arcPts(ro,ang(L[L.length-1]),ang(R[R.length-1]),1),R.slice().reverse(),arcPts(ri,ang(R[0]),ang(L[0]),-1));
+    }else pts=L.concat(R.slice().reverse());
+    // Anchor = a point safely inside the copper, used for the KiCad pad origin
+    // and the preview label: the middle of the solid spine at mid-width.
+    // sw = spine width in mm after clearance (also feeds the "spine too thin" check).
+    var ua,sw;
+    if(rg.l==null){var e=bounds[rg.r]-h/2;ua=e/2;sw=e*uScale-c/2;}
+    else if(rg.r==null){var s0=bounds[rg.l]+h/2;ua=(s0+Lu)/2;sw=(Lu-s0)*uScale-c/2;}
+    else{ua=(bounds[rg.l]+bounds[rg.r])/2;sw=(P0-h)*uScale-c;}
+    minSpine=Math.min(minSpine,sw);
+    polys.push({ch:rg.ch,j:rg.j,pts:pts,anchor:map(ua,W/2),spine:sw});
+  });
+  // Bounding box [xmin, ymin, xmax, ymax] of all copper (wheel: exact circle).
+  var bb=[Infinity,Infinity,-Infinity,-Infinity];
+  polys.forEach(function(pg){pg.pts.forEach(function(q){if(q[0]<bb[0])bb[0]=q[0];if(q[1]<bb[1])bb[1]=q[1];if(q[0]>bb[2])bb[2]=q[0];if(q[1]>bb[3])bb[3]=q[1];});});
+  if(cyclic)bb=[-ro,-ro,ro,ro];
+
+  /* estimate(sig) -> u position, or null if nothing is touched.
+     sig[ch] = signal of each channel (copper area under the finger, mm^2).
+     Models what touch firmware does with the per-channel deltas:
+       wheel:        vector sum, each channel at its element-centre angle.
+       split slider: same vector sum with the N strip positions spread over
+                     360 deg; near the wrap point the result is ambiguous
+                     (both ends are the same channel), so compare the two
+                     channels adjacent to the ends to decide which end it is.
+       separate:     plain centroid of the element centres padU + j*P0. */
+  function estimate(sig){
+    var tot=0,i,sx=0,sy=0;for(i=0;i<N;i++)tot+=sig[i];if(tot<=1e-9)return null;
+    if(cyclic){for(i=0;i<N;i++){var ph=(i+0.5)*P0*D2R;sx+=sig[i]*Math.sin(ph);sy+=sig[i]*Math.cos(ph);}return mod(Math.atan2(sx,sy)*R2D,360);}
+    if(split){
+      for(var jj=0;jj<N;jj++){var ph2=jj*360/N*D2R;sx+=sig[chAt[jj]]*Math.sin(ph2);sy+=sig[chAt[jj]]*Math.cos(ph2);}
+      var a=mod(Math.atan2(sx,sy)*R2D,360),s1=sig[chAt[1]],sL=sig[chAt[N-1]];
+      if(a>360*(N-1)/N&&s1>sL)a-=360;else if(a<360/N&&sL>s1)a+=360;
+      return clamp(padU+a/360*N*P0,0,Lu);
+    }
+    var acc=0;for(i=0;i<N;i++)acc+=sig[i]*(padU+i*P0);return acc/tot;
+  }
+  // Inverse of map() along the travel: board point -> u (ignores v).
+  function uFromPoint(x,y){
+    if(!polar)return x+Lu/2;
+    var u=mod(Math.atan2(x,-y)*R2D-a0,360);
+    if(!cyclic&&u>Lu+(360-Lu)/2)u-=360;
+    return u;
+  }
+  return {N:N,T:T,type:type,cyclic:cyclic,polar:polar,split:split,W:W,Lu:Lu,ri:ri,ro:ro,a0:a0,uScale:uScale,
+    padU:padU,P0:P0,h:h,step:step,ft:ft,polys:polys,bbox:bb,map:map,estimate:estimate,uFromPoint:uFromPoint,
+    warn:warn,chAt:chAt,minSpine:minSpine,clr:c};
+}
+</script>
+
+<script>
+(function(){
+/* ==========================================================================
+   UI, SIMULATION, EXPORT
+   Flow: control change -> P updated -> schedule() -> recompute():
+     build(P) -> makeRaster() -> simulate() -> draw*() for every panel.
+   Dragging the finger only calls drawFinger() (one signalsAt() lookup).
+   ========================================================================== */
+// Channel colours (preview, chart and SVG export) and the single "copper" colour.
+var CH=['#e9a35b','#62b6d8','#e2738f','#9fcd6c','#b795e4','#e6d05e','#63cfb8','#ec8a63'];
+var COPPER='#d0935a';
+// Default parameters. Keys here are also the keys saved to localStorage and
+// written as JSON into the exported SVG comment, so renaming one breaks old saves.
+var DEF={type:'linear',n:3,tines:7,overlap:90,clr:0.3,tip:0.4,finger:9,
+  L:60,W:12,ends:'split',split:'last',pad:1,
+  aRo:30,aRi:18,aCenter:0,sweep:120,
+  wRo:20,wRi:10,rot:0,view:'channels',mask:'covered',fpname:''};
+// P = live parameter state. Restore the viewer's last settings when available.
+var P=Object.assign({},DEF);
+try{var saved=JSON.parse(localStorage.getItem('captouch-designer')||'null');if(saved&&typeof saved==='object')Object.keys(DEF).forEach(function(k){if(k in saved)P[k]=saved[k]});}catch(e){}
+function persist(){try{localStorage.setItem('captouch-designer',JSON.stringify(P))}catch(e){}}
+
+// Numeric controls. g = group: 'el' electrode pattern, 'linear'/'arc'/'wheel'
+// shape-specific, 'strip' linear+arc only, 'sim' finger model. Each becomes a
+// label + number box + range slider (see makeField). Add a parameter by adding
+// it here and to DEF, then using p.<key> in build().
+var FIELDS=[
+  {k:'n',g:'el',label:'Channels',min:3,max:8,step:1,hint:'Electrodes / sense pins'},
+  {k:'tines',g:'el',label:'Tines',min:2,max:15,step:1,hint:'Zigzag vertices across the width'},
+  {k:'overlap',g:'el',label:'Tine length',unit:'% pitch',min:30,max:95,step:1,hint:'How far tines reach into the neighbor'},
+  {k:'clr',g:'el',label:'Clearance',unit:'mm',min:0.05,max:1,step:0.05},
+  {k:'tip',g:'el',label:'Tip width',unit:'mm',min:0.05,max:2,step:0.05},
+  {k:'L',g:'linear',label:'Length',unit:'mm',min:15,max:200,step:1},
+  {k:'W',g:'linear',label:'Width',unit:'mm',min:3,max:40,step:0.5},
+  {k:'aRo',g:'arc',label:'Outer radius',unit:'mm',min:8,max:100,step:0.5},
+  {k:'aRi',g:'arc',label:'Inner radius',unit:'mm',min:2,max:95,step:0.5},
+  {k:'sweep',g:'arc',label:'Sweep',unit:'°',min:30,max:300,step:1},
+  {k:'aCenter',g:'arc',label:'Center angle',unit:'°',min:-180,max:180,step:1,hint:'0° is 12 o’clock, clockwise positive'},
+  {k:'wRo',g:'wheel',label:'Outer radius',unit:'mm',min:8,max:60,step:0.5},
+  {k:'wRi',g:'wheel',label:'Inner radius',unit:'mm',min:2,max:55,step:0.5},
+  {k:'rot',g:'wheel',label:'CH0 center',unit:'°',min:-180,max:180,step:1,hint:'0° is 12 o’clock, clockwise positive'},
+  {k:'pad',g:'strip',label:'End padding',unit:'mm',min:0,max:15,step:0.5,hint:'Solid copper beyond the outermost tines'},
+  {k:'finger',g:'sim',label:'Finger diameter',unit:'mm',min:4,max:16,step:0.5,hint:'Contact patch; 8–10 mm is typical'}
+];
+var $=function(id){return document.getElementById(id)};
+var fieldEls={};
+
+// Segmented button group bound to P[key]. opts = [[value, label], ...].
+function makeSeg(el,key,opts,onChange){
+  el.innerHTML='';
+  opts.forEach(function(o){
+    var b=document.createElement('button');b.type='button';b.textContent=o[1];b.dataset.v=o[0];b.id='seg-'+key+'-'+o[0];
+    b.setAttribute('aria-pressed',String(P[key]===o[0]));
+    b.addEventListener('click',function(){P[key]=o[0];Array.prototype.forEach.call(el.children,function(c){c.setAttribute('aria-pressed',String(c.dataset.v===o[0]))});onChange();});
+    el.appendChild(b);
+  });
+}
+
+// One numeric field. The number box and range slider stay in sync; typing
+// updates P on every keystroke but only rewrites the box on blur (change),
+// so partial input like "0." isn't clobbered.
+function makeField(f){
+  var d=document.createElement('div');d.className='field';d.dataset.g=f.g;
+  var lab=document.createElement('label');lab.htmlFor='f-'+f.k;lab.textContent=f.label;
+  var num=document.createElement('div');num.className='num';
+  var ni=document.createElement('input');ni.type='number';ni.id='f-'+f.k;ni.min=f.min;ni.max=f.max;ni.step=f.step;ni.value=P[f.k];ni.inputMode='decimal';
+  var un=document.createElement('span');un.className='unit';un.textContent=f.unit||'';
+  num.appendChild(ni);num.appendChild(un);
+  var rg=document.createElement('input');rg.type='range';rg.id='r-'+f.k;rg.min=f.min;rg.max=f.max;rg.step=f.step;rg.value=P[f.k];rg.setAttribute('aria-label',f.label);
+  d.appendChild(lab);d.appendChild(num);d.appendChild(rg);
+  if(f.hint){var hn=document.createElement('div');hn.className='hint';hn.textContent=f.hint;d.appendChild(hn);}
+  function setv(v,fromRange){v=clamp(v,f.min,f.max);if(f.step>=1)v=Math.round(v);P[f.k]=v;if(fromRange)ni.value=v;rg.value=v;schedule();}
+  rg.addEventListener('input',function(){setv(+rg.value,true)});
+  ni.addEventListener('input',function(){var v=parseFloat(ni.value);if(isFinite(v))setv(v,false)});
+  ni.addEventListener('change',function(){ni.value=P[f.k]});
+  fieldEls[f.k]=d;
+  return d;
+}
+
+// Create all controls once at startup.
+function buildControls(){
+  var fsEl=$('fs-el'),fsSh=$('fs-shape'),fsSim=$('fs-sim');
+  FIELDS.forEach(function(f){var el=makeField(f);(f.g==='el'?fsEl:f.g==='sim'?fsSim:fsSh).appendChild(el);});
+  var ends=document.createElement('div');ends.className='optrow';ends.dataset.g='strip';ends.id='endsRow';
+  ends.innerHTML='<span>Ends</span>';var es=document.createElement('div');es.className='seg';ends.appendChild(es);
+  makeSeg(es,'ends',[['split','Split'],['separate','Separate']],function(){syncVis();schedule();});
+  var sp=document.createElement('div');sp.className='optrow';sp.dataset.g='split';sp.id='splitRow';
+  sp.innerHTML='<span>Channel at both ends</span>';var ss=document.createElement('div');ss.className='seg';sp.appendChild(ss);
+  makeSeg(ss,'split',[['last','Highest · Atmel'],['first','CH0 · TI']],schedule);
+  fsSh.appendChild(ends);fsSh.appendChild(sp);
+  makeSeg($('typeSeg'),'type',[['linear','Slider'],['arc','Arc'],['wheel','Wheel']],function(){F={mode:'path',t:0.37};syncVis();schedule();});
+  makeSeg($('viewSeg'),'view',[['channels','Channels'],['copper','Copper']],function(){drawBoard();drawFinger();});
+  makeSeg($('maskSeg'),'mask',[['covered','Covered'],['exposed','Exposed']],function(){persist();});
+  $('fpname').value=P.fpname||'';
+  $('fpname').addEventListener('input',function(){P.fpname=$('fpname').value.trim();persist();});
+}
+// Show only the shape fields relevant to the selected sensor type.
+function syncVis(){
+  var t=P.type;
+  document.querySelectorAll('#fs-shape [data-g]').forEach(function(el){
+    var g=el.dataset.g,show=g===t||(g==='strip'&&t!=='wheel')||(g==='split'&&t!=='wheel'&&P.ends==='split');
+    el.hidden=!show;
+  });
+}
+
+/* Finger simulation works on a raster: every channel's polygons are filled
+   into an offscreen canvas with a unique colour, then a disk is swept over
+   the label image. Raster beats point-in-polygon tests by orders of magnitude
+   for polygons with hundreds of vertices. */
+/* ---------- raster + simulation ---------- */
+// Rasterise channels. s = pixels per mm, capped at 16 and at ~450k pixels total.
+// Channel ch is drawn as rgb((ch+1)*25, 0, 0); only fully opaque pixels with an
+// exact code are labelled, so anti-aliased edge pixels are ignored.
+// lab[i] = channel+1, or 0 for no copper.
+function makeRaster(g){
+  var bb=g.bbox,bw=bb[2]-bb[0],bh=bb[3]-bb[1];
+  var s=Math.min(16,Math.sqrt(4.5e5/(bw*bh)));
+  var w=Math.ceil(bw*s)+2,h=Math.ceil(bh*s)+2;
+  var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  var ctx=cv.getContext('2d',{willReadFrequently:true});
+  ctx.setTransform(s,0,0,s,-bb[0]*s+1,-bb[1]*s+1);
+  g.polys.forEach(function(pg){
+    ctx.fillStyle='rgb('+((pg.ch+1)*25)+',0,0)';ctx.beginPath();
+    pg.pts.forEach(function(q,i){i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])});ctx.closePath();ctx.fill();
+  });
+  var d=ctx.getImageData(0,0,w,h).data,lab=new Uint8Array(w*h);
+  for(var i=0;i<w*h;i++){var r=d[i*4];if(d[i*4+3]===255&&r>0&&r%25===0&&d[i*4+1]===0)lab[i]=r/25;}
+  return {s:s,w:w,h:h,x0:bb[0],y0:bb[1],lab:lab};
+}
+// Copper area (mm^2) of each channel inside a disk of radius rad centred at
+// (cx, cy) in board mm. This is the stand-in for each channel's touch delta:
+// self-capacitance change is roughly proportional to overlapped area.
+function signalsAt(R,cx,cy,rad,N){
+  var sig=new Array(N).fill(0),s=R.s,pcx=(cx-R.x0)*s+1,pcy=(cy-R.y0)*s+1,pr=rad*s,pr2=pr*pr;
+  var xa=Math.max(0,Math.floor(pcx-pr)),xb=Math.min(R.w-1,Math.ceil(pcx+pr)),ya=Math.max(0,Math.floor(pcy-pr)),yb=Math.min(R.h-1,Math.ceil(pcy+pr));
+  for(var y=ya;y<=yb;y++){var dy=y+0.5-pcy,dy2=dy*dy,row=y*R.w;
+    for(var x=xa;x<=xb;x++){var dx=x+0.5-pcx;if(dx*dx+dy2<=pr2){var l=R.lab[row+x];if(l)sig[l-1]++;}}}
+  var a=1/(s*s);for(var i=0;i<N;i++)sig[i]*=a;return sig;
+}
+// Sweep the finger along the centreline (v = W/2) in K steps and collect
+// signals, estimates and errors (mm along the path). Summary stats:
+//   active = travel excluding end padding
+//   mid    = active range where the whole finger disk is on the sensor
+//   maxFull / maxMid = worst |error| in those ranges
+//   coverage = share of active samples where the 2nd strongest channel is
+//              >= 10% of the strongest (i.e. the finger really interpolates)
+//   ripple   = +/- variation of total signal over the mid range
+//   dead     = samples where the finger finds no copper at all
+function simulate(g,R){
+  var K=g.cyclic?180:160,rad=P.finger/2,out={u:[],sig:[],est:[],err:[]};
+  var n=g.cyclic?K:K+1;
+  for(var i=0;i<n;i++){
+    var u=g.Lu*i/K,pt=g.map(u,g.W/2),sig=signalsAt(R,pt[0],pt[1],rad,g.N),e=g.estimate(sig);
+    out.u.push(u);out.sig.push(sig);out.est.push(e);
+    out.err.push(e==null?null:(g.cyclic?wrap180(e-u):e-u)*g.uScale);
+  }
+  var lo=g.cyclic?-1:g.padU,hi=g.cyclic?1e9:g.Lu-g.padU;
+  var ml=g.cyclic?-1:Math.max(g.padU,rad/g.uScale),mh=g.cyclic?1e9:Math.min(g.Lu-g.padU,g.Lu-rad/g.uScale);
+  var maxFull=0,maxMid=0,cov=0,cnt=0,tmin=Infinity,tmax=0,tsum=0,tn=0,dead=0;
+  for(i=0;i<n;i++){
+    var uu=out.u[i];if(uu<lo-1e-9||uu>hi+1e-9)continue;
+    var er=out.err[i];if(er==null){dead++;continue;}
+    maxFull=Math.max(maxFull,Math.abs(er));
+    var sg=out.sig[i].slice().sort(function(a,b){return b-a});cnt++;if(sg[1]>=0.1*sg[0])cov++;
+    if(uu>=ml-1e-9&&uu<=mh+1e-9){maxMid=Math.max(maxMid,Math.abs(er));var t=0;out.sig[i].forEach(function(v){t+=v});tmin=Math.min(tmin,t);tmax=Math.max(tmax,t);tsum+=t;tn++;}
+  }
+  out.maxFull=maxFull;out.maxMid=tn?maxMid:null;out.coverage=cnt?cov/cnt:0;out.dead=dead;
+  out.ripple=tn?(tmax-tmin)/(tsum/tn)/2:null;out.mid=[ml,mh];out.active=[lo,hi];
+  return out;
+}
+
+
+/* ---------- state + render ---------- */
+// geom/raster/sim = results of the last recompute().
+// F = finger position: {mode:'path', t:0..1 along travel} (keyboard, default)
+//     or {mode:'free', x, y} in board mm (pointer drag).
+var geom,raster,sim,F={mode:'path',t:0.37},pending=false;
+// Coalesce rapid input events into one recompute per animation frame.
+function schedule(){if(pending)return;pending=true;requestAnimationFrame(function(){pending=false;recompute();});}
+// Full pipeline: geometry -> raster -> sweep -> redraw everything -> save.
+function recompute(){
+  geom=build(P);raster=makeRaster(geom);sim=simulate(geom,raster);
+  drawBoard();drawFinger();drawChart();drawStats();drawChecks();drawExportNote();
+  $('fpname').placeholder=defaultName();persist();
+}
+function f2(v,d){return (+v).toFixed(d==null?1:d)}
+// Format a u position for display: mm for sliders, absolute degrees for arcs/wheels.
+function fmtU(u){return geom.polar?f2(mod(geom.a0+u+180,360)-180,1)+'°':f2(u,1)+' mm'}
+function chName(ch){return 'CH'+ch}
+function colorOf(ch){return P.view==='copper'?COPPER:CH[ch%CH.length]}
+// Polygon -> SVG path data (closed).
+function pathD(pts){var s='';pts.forEach(function(q,i){s+=(i?'L':'M')+q[0].toFixed(3)+' '+q[1].toFixed(3)});return s+'Z'}
+
+// Board preview SVG. viewBox is in board mm with a margin wide enough for the
+// finger. Layers: soldermask rect, 5 mm grid, dashed finger path, electrodes,
+// channel labels (only where the spine is wide enough), 10 mm scale bar, and
+// an empty #fingerG group that drawFinger() fills.
+function drawBoard(){
+  var g=geom,bb=g.bbox,m=Math.max(4,P.finger/2+1.5);
+  var vx=bb[0]-m,vy=bb[1]-m,vw=bb[2]-bb[0]+2*m,vh=bb[3]-bb[1]+2*m+3;
+  var svg=$('board');svg.setAttribute('viewBox',[vx,vy,vw,vh].map(function(v){return v.toFixed(3)}).join(' '));
+  var s='<rect class="pcb" x="'+vx+'" y="'+vy+'" width="'+vw+'" height="'+vh+'"/>';
+  var gd='';for(var x=Math.ceil(vx/5)*5;x<vx+vw;x+=5)gd+='M'+x+' '+vy+'V'+(vy+vh);for(var y=Math.ceil(vy/5)*5;y<vy+vh;y+=5)gd+='M'+vx+' '+y+'H'+(vx+vw);
+  s+='<path class="grid" vector-effect="non-scaling-stroke" stroke-width="1" d="'+gd+'"/>';
+  var tr='',n=g.polar?Math.ceil(g.Lu/2):1;for(var i=0;i<=n;i++){var q=g.map(g.Lu*i/n,g.W/2);tr+=(i?'L':'M')+q[0].toFixed(3)+' '+q[1].toFixed(3);}
+  s+='<path class="track" vector-effect="non-scaling-stroke" stroke-width="1" d="'+tr+'"/>';
+  g.polys.forEach(function(pg){s+='<path fill="'+colorOf(pg.ch)+'" d="'+pathD(pg.pts)+'"/>';});
+  var fs=clamp(Math.min(g.W,g.P0*g.uScale)*0.22,1,2.6);
+  g.polys.forEach(function(pg){if(pg.spine>fs*1.1)s+='<text class="lbl" font-size="'+fs.toFixed(2)+'" x="'+pg.anchor[0].toFixed(2)+'" y="'+pg.anchor[1].toFixed(2)+'">'+pg.ch+'</text>';});
+  var sb=vx+2,sy=vy+vh-2.2;
+  s+='<path class="scale" vector-effect="non-scaling-stroke" stroke-width="1.5" d="M'+sb+' '+sy+'h10M'+sb+' '+(sy-0.8)+'v1.6M'+(sb+10)+' '+(sy-0.8)+'v1.6"/>';
+  s+='<text class="scale-t" font-size="1.5" x="'+(sb+11)+'" y="'+(sy+0.5)+'">10 mm</text>';
+  s+='<g id="fingerG"></g>';
+  svg.innerHTML=s;
+  var dims;
+  if(g.type==='linear')dims=f2(P.L,1)+' × '+f2(P.W,1)+' mm · '+g.N+' ch · pitch '+f2(g.P0,2)+' mm';
+  else if(g.type==='arc')dims='R'+f2(g.ro,1)+' / R'+f2(g.ri,1)+' mm · '+f2(P.sweep,0)+'° · '+g.N+' ch · pitch '+f2(g.P0*g.uScale,2)+' mm';
+  else dims='Ø'+f2(2*g.ro,1)+' / Ø'+f2(2*g.ri,1)+' mm · '+g.N+' ch · '+f2(g.P0,1)+'° per channel';
+  $('dims').textContent=dims;
+}
+// Finger centre in board mm.
+function fingerXY(){
+  if(F.mode==='path'){return geom.map(geom.Lu*F.t,geom.W/2);}
+  return [F.x,F.y];
+}
+// Draw the finger disk and the estimated-position marker, then update the
+// per-channel bars and the estimate readout for this one finger position.
+function drawFinger(){
+  var g=geom,xy=fingerXY(),rad=P.finger/2,sig=signalsAt(raster,xy[0],xy[1],rad,g.N),est=g.estimate(sig);
+  var s='<circle class="finger" vector-effect="non-scaling-stroke" stroke-width="1.5" cx="'+xy[0].toFixed(3)+'" cy="'+xy[1].toFixed(3)+'" r="'+rad+'"/>';
+  if(est!=null){var q=g.map(est,g.W/2);s+='<circle class="est" vector-effect="non-scaling-stroke" stroke-width="2" cx="'+q[0].toFixed(3)+'" cy="'+q[1].toFixed(3)+'" r="'+(Math.min(g.W,6)*0.12).toFixed(3)+'"/>';}
+  var fg=$('fingerG');if(fg)fg.innerHTML=s;
+  var mx=Math.max.apply(null,sig.concat([1e-9])),tot=sig.reduce(function(a,b){return a+b},0),b='';
+  for(var i=0;i<g.N;i++)b+='<div class="bar-row"><span class="tag"><span class="sw" style="background:'+CH[i]+'"></span>'+chName(i)+'</span><div class="bar"><i style="width:'+(100*sig[i]/mx).toFixed(1)+'%;background:'+CH[i]+'"></i></div><span class="v">'+f2(sig[i],1)+' mm²</span></div>';
+  $('bars').innerHTML=b;
+  var tu=g.uFromPoint(xy[0],xy[1]),eb='';
+  if(est==null)eb='<span class="big">No contact</span><span class="muted">Drag the finger onto the copper.</span>';
+  else{
+    var err=(g.cyclic?wrap180(est-tu):est-tu)*g.uScale;
+    eb='<span class="muted">Estimated position</span><span class="big">'+fmtU(est)+'</span>'+
+       '<span class="muted">Finger at '+fmtU(tu)+' · error '+(err>=0?'+':'')+f2(err,2)+' mm</span>'+
+       '<span class="muted">Total under finger '+f2(tot,1)+' mm²</span>';
+  }
+  $('estbox').innerHTML=eb;
+}
+// "Nice" axis ticks (steps of 1, 2, 5 x 10^n).
+function ticks(lo,hi,count){
+  var span=hi-lo,st0=span/count,mag=Math.pow(10,Math.floor(Math.log10(st0))),e=st0/mag;
+  var st=(e>=7.5?10:e>=3.5?5:e>=1.5?2:1)*mag,out=[];
+  for(var v=Math.ceil(lo/st)*st;v<=hi+1e-9;v+=st)out.push(+v.toFixed(8));return out;
+}
+// Two-panel sweep chart in a fixed 640-wide viewBox:
+//   top    = each channel's signal vs travel (normalised to the largest signal)
+//   bottom = position error in mm, symmetric axis scaled to the worst error
+// x is u mapped onto [xl, xr]; arcs/wheels are labelled in absolute degrees.
+// Shaded bands mark where the finger hangs off the ends of a slider.
+function drawChart(){
+  var g=geom,S=sim,xl=54,xr=626,y1a=26,y1b=128,y2a=166,y2b=272,s='';
+  var off=g.polar?g.a0:0,X=function(u){return xl+(u/g.Lu)*(xr-xl)};
+  var mxs=1e-9;S.sig.forEach(function(a){a.forEach(function(v){if(v>mxs)mxs=v})});
+  var E=0.5;S.err.forEach(function(e){if(e!=null)E=Math.max(E,Math.abs(e))});
+  var et=ticks(0,E,2);E=Math.max(E,et[et.length-1]);if(et[et.length-1]<E)E=et[et.length-1]+(et[1]-et[0]);
+  var Y2=function(e){return (y2a+y2b)/2-(e/E)*(y2b-y2a)/2};
+  if(!g.cyclic){
+    [[0,S.mid[0]],[S.mid[1],g.Lu]].forEach(function(r){if(r[1]>r[0]){s+='<rect class="shade" x="'+X(r[0])+'" y="'+y1a+'" width="'+(X(r[1])-X(r[0]))+'" height="'+(y1b-y1a)+'"/><rect class="shade" x="'+X(r[0])+'" y="'+y2a+'" width="'+(X(r[1])-X(r[0]))+'" height="'+(y2b-y2a)+'"/>';}});
+  }
+  s+='<text class="ttl" x="'+xl+'" y="16">Channel signal (copper area under finger)</text>';
+  s+='<text class="ttl" x="'+xl+'" y="'+(y2a-10)+'">Position error (mm)</text>';
+  s+='<line class="ax" x1="'+xl+'" x2="'+xr+'" y1="'+y1b+'" y2="'+y1b+'"/><line class="ax" x1="'+xl+'" x2="'+xl+'" y1="'+y1a+'" y2="'+y1b+'"/>';
+  s+='<text x="'+(xl-6)+'" y="'+(y1a+4)+'" text-anchor="end">'+f2(mxs,0)+'</text><text x="'+(xl-6)+'" y="'+y1b+'" text-anchor="end">0</text>';
+  for(var ch=0;ch<g.N;ch++){var d='';S.u.forEach(function(u,i){var y=y1b-(S.sig[i][ch]/mxs)*(y1b-y1a);d+=(i?'L':'M')+X(u).toFixed(1)+' '+y.toFixed(1)});s+='<path d="'+d+'" fill="none" stroke="'+CH[ch]+'" stroke-width="1.6"/>';}
+  [-1,1].forEach(function(sg){et.forEach(function(t){if(t===0)return;var yy=Y2(sg*t);s+='<line class="ax" x1="'+xl+'" x2="'+xr+'" y1="'+yy+'" y2="'+yy+'" stroke-dasharray="2 3"/><text x="'+(xl-6)+'" y="'+(yy+3)+'" text-anchor="end">'+(sg>0?'+':'−')+t+'</text>';});});
+  s+='<line class="zero" x1="'+xl+'" x2="'+xr+'" y1="'+Y2(0)+'" y2="'+Y2(0)+'"/><text x="'+(xl-6)+'" y="'+(Y2(0)+3)+'" text-anchor="end">0</text>';
+  var d2='',pen=false;S.u.forEach(function(u,i){var e=S.err[i];if(e==null){pen=false;return;}d2+=(pen?'L':'M')+X(u).toFixed(1)+' '+Y2(e).toFixed(1);pen=true;});
+  s+='<path class="err" d="'+d2+'"/>';
+  s+='<line class="ax" x1="'+xl+'" x2="'+xr+'" y1="'+y2b+'" y2="'+y2b+'"/>';
+  ticks(off,off+g.Lu,8).forEach(function(t){var x=X(t-off);if(x<xl-0.5||x>xr+0.5)return;s+='<line class="ax" x1="'+x+'" x2="'+x+'" y1="'+y2b+'" y2="'+(y2b+4)+'"/><text x="'+x+'" y="'+(y2b+15)+'" text-anchor="middle">'+t+'</text>';});
+  s+='<text x="'+xr+'" y="'+(y2b+27)+'" text-anchor="end">'+(g.polar?'angle, ° (0° = top, clockwise)':'position along slider, mm')+'</text>';
+  $('chart').setAttribute('viewBox','0 0 640 304');$('chart').innerHTML=s;
+}
+// Summary numbers beside the chart.
+function drawStats(){
+  var S=sim,g=geom,rows=[];
+  rows.push(['Max error, finger fully on sensor',S.maxMid==null?'—':'±'+f2(S.maxMid,2)+' mm']);
+  if(!g.cyclic)rows.push(['Max error, full travel','±'+f2(S.maxFull,2)+' mm']);
+  rows.push(['Touching 2+ channels',f2(S.coverage*100,0)+'% of travel']);
+  rows.push(['Signal ripple',S.ripple==null?'—':'±'+f2(S.ripple*100,1)+'%']);
+  rows.push(['Element pitch',g.polar?f2(g.P0,1)+'° · '+f2(g.P0*g.uScale,1)+' mm':f2(g.P0,2)+' mm']);
+  $('stats').innerHTML=rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'}).join('');
+}
+// Design checks: each entry is [level 'ok'|'warn'|'info', message, source].
+// Thresholds come from TI SLAA891, Atmel AT02259 and the AT42QT2120 datasheet,
+// plus results from the sweep. The right column holds static layout reminders.
+function drawChecks(){
+  var g=geom,S=sim,L=[],c=P.clr,pitch=g.P0*g.uScale;
+  function add(lv,t,src){L.push([lv,t,src]);}
+  if(g.N===3)add('ok','3 channels: the standard QTouch slider/wheel layout (QT2120 keys 0–2).','QT2120');
+  else if(g.N===4)add('ok','4 elements: TI’s typical slider/wheel count.','SLAA891');
+  else add('info','More than 4 self-cap elements is rarely needed; 4–8 is the QMatrix (mutual-cap) range.','SLAA891, AT02259');
+  if(c<0.1)add('warn','Clearance '+c+' mm is below the 0.1–0.5 mm range.','AT02259');
+  else if(c>0.5)add('warn','Clearance '+c+' mm is above 0.5 mm; wide gaps weaken coupling between neighbors.','AT02259');
+  else add('ok','Clearance '+c+' mm is inside 0.1–0.5 mm.'+(c<0.15?' Confirm your fab’s minimum spacing.':''),'AT02259');
+  if(P.tip<0.15)add('warn','Tip width '+P.tip+' mm leaves copper slivers narrower than most fabs’ minimum trace.','');
+  if(g.warn.indexOf('tinesDense')>=0)add('warn','Tines are too dense for this width, tip and clearance; tips were narrowed. Reduce tines or clearance.','');
+  if(g.minSpine<0.4)add('warn','The solid spine between tine rows is only '+f2(Math.max(0,g.minSpine),2)+' mm. Lower the tine length.','');
+  if(g.warn.indexOf('innerClamp')>=0)add('warn','Inner radius must be at least 2 mm smaller than outer; it was clamped.','');
+  if(g.warn.indexOf('padClamp')>=0)add('warn','End padding was limited to 30% of the travel.','');
+  var tineW=2*g.step;
+  if(tineW>P.finger*0.9)add('warn','Each tine is ~'+f2(tineW,1)+' mm wide at its base, about a finger. Add tines so the finger always straddles several.','');
+  if(g.type==='linear'){
+    if(P.W<5||P.W>15)add('info','Width '+P.W+' mm is outside the usual 5–15 mm (12 mm typical).','AT02259, QT2120');
+    if(P.L<50||P.L>100)add('info','Length '+P.L+' mm is outside QT2120’s typical 50–100 mm.','QT2120');
+  }else if(g.type==='wheel'){
+    var D=2*g.ro;
+    if(D>80)add('warn','Ø'+D+' mm exceeds the 80 mm spatially interpolated wheel limit.','QT2120');
+    else if(D<30||D>50)add('info','Ø'+D+' mm is outside the typical 30–50 mm.','QT2120');
+    else add('ok','Ø'+D+' mm is in the typical 30–50 mm range.','QT2120');
+  }
+  if(g.polar&&(g.W<5||g.W>15))add('info','Ring width '+f2(g.W,1)+' mm; around 12 mm is typical for wheel segments.','QT2120');
+  if(S.coverage<0.95)add('warn','The finger touches only one channel over '+f2((1-S.coverage)*100,0)+'% of the travel, so position steps there. Lengthen tines, add channels, or shorten the pitch.','');
+  else add('ok','The finger straddles at least two channels across the travel.','');
+  if(S.maxMid!=null){var rel=S.maxMid/pitch;
+    if(rel<0.08)add('ok','Mid-travel error ±'+f2(S.maxMid,2)+' mm ('+f2(rel*100,0)+'% of pitch).','');
+    else add('warn','Mid-travel error ±'+f2(S.maxMid,2)+' mm ('+f2(rel*100,0)+'% of pitch). Longer tines or more tines usually flatten it.','');}
+  if(S.dead>0)add('warn','The finger finds no copper at '+S.dead+' sample points along the travel.','');
+  $('checks').innerHTML=L.map(function(r){return '<li><span class="chip '+r[0]+'">'+r[0]+'</span><span>'+r[1]+(r[2]?' <span class="src">'+r[2]+'</span>':'')+'</span></li>'}).join('');
+  var R=[];
+  if(g.split)R.push('Join the two '+chName(g.chAt[0])+' end halves with a trace routed away from the slider, so it can’t be touched while sliding.');
+  R.push('No ground pour or switching traces under the electrodes. If shielding is needed, use hatched ground under 40% copper.');
+  R.push('Keep sense lines short (under 150 mm), 0.1–0.5 mm wide, on the far layer, with series Rs near the chip.');
+  R.push('Use channels with matched loading; one heavy pin unbalances the interpolation.');
+  R.push('Overlay for sliders and wheels: up to about 3 mm plastic or 4 mm glass.');
+  $('remind').innerHTML=R.map(function(t){return '<li>'+t+'</li>'}).join('');
+}
+function drawExportNote(){
+  var g=geom;
+  $('expNote').innerHTML='SVG units are millimetres. In KiCad use <code>File → Import → Graphics</code> at scale 1.0 onto <code>F.Cu</code>; each channel arrives as a filled polygon that you convert to a pad or zone. '+
+  'The footprint is ready to place: one custom pad per channel, pad 1 = CH0'+(g.split?', and both end halves share pad '+(g.chAt[0]+1):'')+'. Its origin is the '+(g.polar?'arc center':'slider center')+'. The footprint saves as a .zip holding a <code>CapTouch.pretty</code> library.';
+}
+
+/* ---------- export ----------
+   Both exports use the same polygons as the preview, in board mm.
+   SVG:  one <g id="CHn"> per channel, width/height in mm so KiCad's importer
+         (and anything else) keeps real-world size at scale 1.0.
+   KiCad footprint (.kicad_mod, KiCad 7 s-expression format, version 20221018):
+         one custom-shape SMD pad per region. The pad sits at the region's
+         anchor with a tiny circular anchor shape; the polygon is a gr_poly
+         primitive in pad-relative coordinates. Pad number = channel + 1, so
+         the two halves of a split channel share a number (same net).
+         Mask: 'covered' puts the pad on F.Cu only, 'exposed' adds F.Mask. */
+/* ---------- export ---------- */
+// Round to 0.1 um and avoid printing "-0".
+function n4(v){var r=Math.round(v*1e4)/1e4;return (r===0?0:r).toString()}
+// Footprint/file name derived from the parameters, e.g. CapSlider_3ch_60x12mm.
+function defaultName(){
+  var g=geom,N=g.N;
+  if(g.type==='linear')return 'CapSlider_'+N+'ch_'+n4(P.L)+'x'+n4(P.W)+'mm';
+  if(g.type==='arc')return 'CapArc_'+N+'ch_R'+n4(g.ro)+'-'+n4(g.ri)+'_'+n4(P.sweep)+'deg';
+  return 'CapWheel_'+N+'ch_D'+n4(2*g.ro)+'_ID'+n4(2*g.ri);
+}
+// User-entered name if any, sanitised to characters safe for file and footprint names.
+function fpName(){return (P.fpname||defaultName()).replace(/[^A-Za-z0-9_.\-]/g,'_')}
+// Parameters as JSON for the SVG header comment ("--" is illegal inside XML comments).
+function paramsComment(){var q=Object.assign({},P);delete q.view;delete q.fpname;return JSON.stringify(q).replace(/--/g,'- -')}
+
+function makeSVG(){
+  var g=geom,bb=g.bbox,w=bb[2]-bb[0],h=bb[3]-bb[1],out=[];
+  out.push('<?xml version="1.0" encoding="UTF-8"?>');
+  out.push('<!-- '+fpName()+' : generated by Captouch Slider Designer. Units: mm. Params: '+paramsComment()+' -->');
+  out.push('<svg xmlns="http://www.w3.org/2000/svg" width="'+n4(w)+'mm" height="'+n4(h)+'mm" viewBox="'+n4(bb[0])+' '+n4(bb[1])+' '+n4(w)+' '+n4(h)+'">');
+  for(var ch=0;ch<g.N;ch++){
+    out.push('  <g id="CH'+ch+'" fill="'+CH[ch]+'" stroke="none">');
+    g.polys.filter(function(p){return p.ch===ch}).forEach(function(p){
+      out.push('    <path d="M'+p.pts.map(function(q){return n4(q[0])+' '+n4(q[1])}).join(' L')+' Z"/>');
+    });
+    out.push('  </g>');
+  }
+  out.push('</svg>');return out.join('\n')+'\n';
+}
+
+function makeFootprint(){
+  var g=geom,bb=g.bbox,name=fpName(),o=[];
+  var layers=P.mask==='exposed'?'"F.Cu" "F.Mask"':'"F.Cu"';
+  var desc=(g.type==='linear'?'Capacitive slider':g.type==='arc'?'Capacitive arc slider':'Capacitive wheel')+', '+g.N+' channels, interdigitated, clearance '+P.clr+' mm';
+  o.push('(footprint "'+name+'"');
+  o.push('  (version 20221018)');
+  o.push('  (generator "captouch_slider_designer")');
+  o.push('  (layer "F.Cu")');
+  o.push('  (descr "'+desc+'")');
+  o.push('  (tags "capacitive touch slider wheel qtouch")');
+  o.push('  (attr smd exclude_from_pos_files exclude_from_bom)');
+  o.push('  (fp_text reference "REF**" (at 0 '+n4(bb[1]-1.5)+') (layer "F.SilkS") (effects (font (size 1 1) (thickness 0.15))))');
+  o.push('  (fp_text value "'+name+'" (at 0 '+n4(bb[3]+1.5)+') (layer "F.Fab") (effects (font (size 1 1) (thickness 0.15))))');
+  o.push('  (fp_rect (start '+n4(bb[0]-0.5)+' '+n4(bb[1]-0.5)+') (end '+n4(bb[2]+0.5)+' '+n4(bb[3]+0.5)+') (stroke (width 0.05) (type default)) (fill none) (layer "F.CrtYd"))');
+  o.push('  (fp_rect (start '+n4(bb[0])+' '+n4(bb[1])+') (end '+n4(bb[2])+' '+n4(bb[3])+') (stroke (width 0.1) (type default)) (fill none) (layer "F.Fab"))');
+  g.polys.slice().sort(function(a,b){return a.ch-b.ch||a.j-b.j}).forEach(function(p){
+    var ax=p.anchor[0],ay=p.anchor[1],as=clamp(p.spine*0.4,0.05,0.5),pts='';
+    p.pts.forEach(function(q,i){pts+=(i&&i%4===0?'\n            ':' ')+'(xy '+n4(q[0]-ax)+' '+n4(q[1]-ay)+')';});
+    o.push('  (pad "'+(p.ch+1)+'" smd custom (at '+n4(ax)+' '+n4(ay)+') (size '+n4(as)+' '+n4(as)+') (layers '+layers+')');
+    o.push('    (options (clearance outline) (anchor circle))');
+    o.push('    (primitives');
+    o.push('      (gr_poly (pts'+pts+')');
+    o.push('        (width 0) (fill yes))');
+    o.push('    )');
+    o.push('  )');
+  });
+  o.push(')');return o.join('\n')+'\n';
+}
+// Minimal ZIP writer (STORE method, no compression) so the footprint can be
+// delivered as a CapTouch.pretty library folder. CRC-32 table first.
+var CRC=(function(){var t=new Uint32Array(256);for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t})();
+function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=CRC[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+// files = [{name, text}]. Writes a local header + data per file, then the
+// central directory and end-of-central-directory record (all little-endian).
+function makeZip(files){
+  var enc=new TextEncoder(),parts=[],central=[],off=0,now=new Date();
+  var dtime=(now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1),ddate=((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+  files.forEach(function(f){
+    var nm=enc.encode(f.name),data=enc.encode(f.text),crc=crc32(data);
+    var lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0,true);lh.setUint16(8,0,true);
+    lh.setUint16(10,dtime,true);lh.setUint16(12,ddate,true);lh.setUint32(14,crc,true);lh.setUint32(18,data.length,true);lh.setUint32(22,data.length,true);
+    lh.setUint16(26,nm.length,true);lh.setUint16(28,0,true);
+    parts.push(new Uint8Array(lh.buffer),nm,data);
+    var ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0,true);ch.setUint16(10,0,true);
+    ch.setUint16(12,dtime,true);ch.setUint16(14,ddate,true);ch.setUint32(16,crc,true);ch.setUint32(20,data.length,true);ch.setUint32(24,data.length,true);
+    ch.setUint16(28,nm.length,true);ch.setUint16(30,0,true);ch.setUint16(32,0,true);ch.setUint16(34,0,true);ch.setUint16(36,0,true);ch.setUint32(38,0,true);ch.setUint32(42,off,true);
+    central.push(new Uint8Array(ch.buffer),nm);
+    off+=30+nm.length+data.length;
+  });
+  var csz=central.reduce(function(a,b){return a+b.length},0);
+  var e=new DataView(new ArrayBuffer(22));
+  e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,csz,true);e.setUint32(16,off,true);
+  return new Blob(parts.concat(central,[new Uint8Array(e.buffer)]),{type:'application/zip'});
+}
+
+/* ---------- save / copy ----------
+   Inside claude.ai the page is sandboxed: downloads must go through the
+   "downloads" runtime capability (window.claude.use('downloads')), which asks
+   the viewer to confirm. Opened as a plain local or hosted file there is no
+   window.claude, so offer() falls back to an ordinary <a download> blob link.
+   Copy uses the async clipboard API, with a select-all textarea fallback. */
+/* ---------- save / copy ---------- */
+var dlP=(window.claude&&typeof window.claude.use==='function')?window.claude.use('downloads').catch(function(){return null}):Promise.resolve(null);
+function toast(msg){var t=$('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(function(){t.hidden=true},2600);}
+function offer(filename,data,mime){
+  dlP.then(function(dl){
+    if(dl){return dl.save({filename:filename,data:data}).then(function(r){toast(r&&r.status==='delivered'?'Sent '+filename:'Saved '+filename)},function(e){
+      var code=e&&e.code;toast(code==='declined'?'Save cancelled':code==='rate_limited'?'A save prompt is already open':'Saving isn’t available here. Use Copy instead.');});}
+    if(window.claude){toast('Saving isn’t available in this view. Use Copy instead.');return;}
+    var url=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type:mime})),a=document.createElement('a');
+    a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},4000);toast('Saved '+filename);
+  });
+}
+function copyText(text,label){
+  function fallback(){$('copytext').value=text;$('copybox').hidden=false;$('copytext').focus();$('copytext').select();}
+  try{navigator.clipboard.writeText(text).then(function(){toast(label+' copied')},fallback);}catch(e){fallback();}
+}
+$('saveSvg').addEventListener('click',function(){offer(fpName()+'.svg',makeSVG(),'image/svg+xml')});
+$('saveFp').addEventListener('click',function(){offer(fpName()+'.zip',makeZip([{name:'CapTouch.pretty/'+fpName()+'.kicad_mod',text:makeFootprint()},{name:fpName()+'.svg',text:makeSVG()}]),'application/zip')});
+$('copySvg').addEventListener('click',function(){copyText(makeSVG(),'SVG')});
+$('copyFp').addEventListener('click',function(){copyText(makeFootprint(),'Footprint')});
+$('copyClose').addEventListener('click',function(){$('copybox').hidden=true});
+
+/* ---------- finger interaction ----------
+   Pointer drag places the finger anywhere (free mode, board mm via the SVG's
+   screen transform). Arrow keys move it along the travel (path mode): 1% per
+   press, 5% with Shift; wheels wrap around. */
+/* ---------- finger interaction ---------- */
+var svgEl=$('board'),dragging=false;
+function svgPoint(ev){var pt=svgEl.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;var m=svgEl.getScreenCTM();if(!m)return null;var r=pt.matrixTransform(m.inverse());return [r.x,r.y];}
+function moveTo(ev){var p=svgPoint(ev);if(!p)return;F={mode:'free',x:p[0],y:p[1]};drawFinger();}
+svgEl.addEventListener('pointerdown',function(ev){dragging=true;try{svgEl.setPointerCapture(ev.pointerId)}catch(e){}moveTo(ev);});
+svgEl.addEventListener('pointermove',function(ev){if(dragging)moveTo(ev);});
+svgEl.addEventListener('pointerup',function(){dragging=false});
+svgEl.addEventListener('pointercancel',function(){dragging=false});
+svgEl.addEventListener('keydown',function(ev){
+  var d=ev.key==='ArrowRight'||ev.key==='ArrowUp'?1:ev.key==='ArrowLeft'||ev.key==='ArrowDown'?-1:0;if(!d)return;ev.preventDefault();
+  var t=F.mode==='path'?F.t:clamp(geom.uFromPoint(F.x,F.y)/geom.Lu,0,1);
+  t+=d*(ev.shiftKey?0.05:0.01);t=geom.cyclic?mod(t,1):clamp(t,0,1);F={mode:'path',t:t};drawFinger();
+});
+
+buildControls();syncVis();recompute();
+})();
+</script>

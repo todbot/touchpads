@@ -3,6 +3,10 @@
 
 Some capacitive sense touch sensors: buttons and touchwheels
 
+Design your own sliders and wheels with the
+[Captouch Designer](https://todbot.github.io/touchpads/captouch-designer/)
+web app (source in [`captouch-designer/`](./captouch-designer/)).
+
 ## Touchpads
 
 Touchpads are capacitive sensing button inputs that consist of a copper
