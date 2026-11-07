@@ -1,6 +1,6 @@
 # Captouch Slider Designer
 
-Browser tool for designing interdigitated (spatially interpolated, "ratiometric") self-capacitance touch sensors: linear sliders, arc sliders and wheels. It previews the copper, simulates a finger sweep to estimate linearity, and exports an SVG plus a KiCad footprint.
+Browser tool for designing interdigitated (spatially interpolated, "ratiometric") self-capacitance touch sensors: linear sliders, arc sliders and wheels. It previews the copper, simulates a finger sweep to estimate linearity, and exports an SVG, a KiCad footprint, and a CircuitPython position-decoding dict.
 
 ## Layout
 
@@ -14,7 +14,7 @@ There is no bundler, framework or package.json. Keep it that way unless asked: t
 Inside the HTML, in order:
 
 1. `<style>`: color tokens at the top of `:root`, then light/dark overrides (see Theming).
-2. Markup: header with sensor type switch, control rail (`<aside>`), board preview, export panel, sweep chart, checks.
+2. Markup: header with sensor type switch, control rail (`<aside>`), board preview, sweep chart, export panel, checks.
 3. `<script id="geo">`: the geometry engine. **Pure and DOM-free.** `tests/geometry-check.mjs` extracts and evals this block by its id, so keep the id, keep it free of DOM/`window` access, and keep `build` a top-level function.
 4. Second `<script>`: UI, raster simulation, chart, design checks, exporters, save/copy, finger interaction. Wrapped in an IIFE.
 
@@ -44,6 +44,7 @@ Run it after any change to the geo script. Add a case to its `cases` list when y
 - The KiCad footprint uses the KiCad 7 s-expression format (`version 20221018`). Pad number = channel + 1. Both halves of a split channel get the same pad number so they land on one net. Covered mask = `F.Cu` only; exposed adds `F.Mask`.
 - SVG export: width/height in `mm`, viewBox in mm, one `<g id="CHn">` per channel, polygons only (no arcs or curves), so KiCad's importer keeps real size at scale 1.0.
 - Keys in `DEF` are persisted to `localStorage` (key `captouch-designer`) and written as JSON into the SVG header comment. Renaming a key silently drops users' saved settings; add new keys with defaults instead.
+- CircuitPython export: `posData` (in `build()`), `makePython()` and `slider_pos()` in `../circuitpython/captouch_designer_demo/captouch_pos.py` must reproduce `estimate()`, with position as a 0..1 fraction of travel. Change all of them together.
 - Form controls get stable ids (`f-<key>`, `r-<key>`, `seg-<key>-<value>`).
 
 ## Adding a parameter
