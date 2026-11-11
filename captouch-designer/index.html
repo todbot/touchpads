@@ -32,6 +32,7 @@ body{background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--ui)}
 header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 28px;border-bottom:1px solid var(--line);padding-bottom:16px}
 h1{font:700 2rem/1 var(--ui);letter-spacing:-.01em;margin:0;text-wrap:balance}
 .sub{margin:8px 0 0;color:var(--muted);max-width:64ch}
+.sub a{color:var(--accent);text-underline-offset:2px}
 h2{font:600 .78rem var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel);flex-wrap:wrap}
 .seg button{font:600 .82rem var(--ui);letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border:0;background:transparent;color:var(--muted);cursor:pointer}
@@ -62,10 +63,12 @@ main{display:flex;flex-direction:column;gap:18px;min-width:0}
 #board .pcb{fill:var(--board)}
 #board .grid{stroke:var(--grid);fill:none}
 #board .track{stroke:var(--on-board);stroke-opacity:.35;fill:none;stroke-dasharray:4 4}
+#board .ref{pointer-events:none}
 #board .lbl{fill:#10231c;font-family:var(--mono);font-weight:500;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 #board .finger{fill:var(--on-board);fill-opacity:.16;stroke:var(--on-board);stroke-dasharray:3 3}
 #board .est{fill:none;stroke:var(--on-board)}
 #board .scale{stroke:var(--on-board);stroke-opacity:.7}
+#board .center{stroke:var(--on-board);stroke-opacity:.8}
 #board .scale-t{fill:var(--on-board);fill-opacity:.7;font-family:var(--mono)}
 .readout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 24px;padding:12px 14px;border-top:1px solid var(--line)}
 @media (max-width:640px){.readout{grid-template-columns:minmax(0,1fr)}}
@@ -113,9 +116,17 @@ ul.checks li{display:grid;grid-template-columns:4.4em minmax(0,1fr);gap:10px;ali
 ul.remind{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px;color:var(--ink)}
 ul.remind li::marker{color:var(--accent)}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:6px;font-weight:500;z-index:20;max-width:calc(100% - 32px)}
-#copybox{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px}
-#copybox .inner{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;width:min(760px,100%);display:flex;flex-direction:column;gap:10px}
-#copybox textarea{width:100%;height:50vh;font:400 .72rem var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px}
+.modal .inner{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;width:min(760px,100%);display:flex;flex-direction:column;gap:10px}
+.modal textarea{width:100%;height:50vh;font:400 .72rem var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px}
+.modal .err{color:var(--warn);font-size:.88rem;margin:0}
+.refbar{display:flex;flex-direction:column;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.refbar .btns{align-items:center}
+.refbar .note{flex:1 1 240px}
+.refctl{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px 18px;align-items:end}
+.refctl .chk{display:flex;gap:6px;align-items:center;font-weight:500}
+.refctl .chk input{accent-color:var(--accent)}
+.refctl .ends{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px;font-size:.8rem;color:var(--muted);margin-top:-2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -123,7 +134,7 @@ ul.remind li::marker{color:var(--accent)}
   <header class="top">
     <div>
       <h1>Captouch Slider Designer</h1>
-      <p class="sub">Interdigitated self-capacitance sliders, arc sliders and wheels. Tune the tines, drag a virtual finger across the copper, then export SVG or a KiCad footprint.</p>
+      <p class="sub">Interdigitated self-capacitance sliders, arc sliders and wheels. Tune the tines, drag a virtual finger across the copper, then export SVG or a KiCad footprint. Source and example boards: <a href="https://github.com/todbot/touchpads" target="_blank" rel="noopener">github.com/todbot/touchpads</a>.</p>
     </div>
     <div class="seg big" id="typeSeg" role="group" aria-label="Sensor type"></div>
   </header>
@@ -140,6 +151,16 @@ ul.remind li::marker{color:var(--accent)}
         <div class="stage-head">
           <span class="dims" id="dims"></span>
           <div class="seg" id="viewSeg" role="group" aria-label="Preview colors"></div>
+        </div>
+        <div class="refbar">
+          <div class="btns">
+            <button class="btn" id="refLoad">Load reference image</button>
+            <button class="btn" id="refFit" hidden>Fit to design</button>
+            <button class="btn" id="refClear" hidden>Remove image</button>
+            <input type="file" id="refFile" accept="image/*" hidden>
+            <p class="note" id="refNote">Overlay a photo or screenshot of an existing sensor, then tune the parameters until the outlines match. You can also drop an image on the preview.</p>
+          </div>
+          <div class="refctl" id="refCtl" hidden></div>
         </div>
         <svg id="board" tabindex="0" aria-label="Electrode preview. Drag to move the finger; arrow keys move it along the travel." xmlns="http://www.w3.org/2000/svg"></svg>
         <div class="readout">
@@ -173,6 +194,7 @@ ul.remind li::marker{color:var(--accent)}
           <button class="btn" id="copyFp">Copy footprint</button>
           <button class="btn" id="savePy">Save CircuitPython</button>
           <button class="btn" id="copyPy">Copy CircuitPython</button>
+          <button class="btn" id="loadOpen">Load design…</button>
         </div>
         <p class="note" id="expNote"></p>
       </section>
@@ -191,11 +213,19 @@ ul.remind li::marker{color:var(--accent)}
   </div>
 </div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
-<div id="copybox" hidden>
+<div id="copybox" class="modal" hidden>
   <div class="inner">
     <strong>Clipboard isn't available here. Select all and copy:</strong>
     <textarea id="copytext" readonly></textarea>
     <div class="btns"><button class="btn primary" id="copyClose">Close</button></div>
+  </div>
+</div>
+<div id="loadbox" class="modal" hidden>
+  <div class="inner" role="dialog" aria-modal="true" aria-labelledby="loadTitle">
+    <strong id="loadTitle">Paste a CircuitPython export, an exported SVG, or the parameter JSON:</strong>
+    <textarea id="loadtext" spellcheck="false" aria-labelledby="loadTitle"></textarea>
+    <p class="err" id="loadErr" hidden></p>
+    <div class="btns"><button class="btn primary" id="loadApply">Load</button><button class="btn" id="loadCancel">Cancel</button></div>
   </div>
 </div>
 
@@ -513,23 +543,24 @@ function makeSeg(el,key,opts,onChange){
   });
 }
 
-// One numeric field. The number box and range slider stay in sync; typing
-// updates P on every keystroke but only rewrites the box on blur (change),
-// so partial input like "0." isn't clobbered.
-function makeField(f){
+// One numeric field bound to obj[f.k] (default P). The number box and range
+// slider stay in sync; typing updates obj on every keystroke but only rewrites
+// the box on blur (change), so partial input like "0." isn't clobbered.
+function makeField(f,obj,onChange){
+  obj=obj||P;onChange=onChange||schedule;
   var d=document.createElement('div');d.className='field';d.dataset.g=f.g;
   var lab=document.createElement('label');lab.htmlFor='f-'+f.k;lab.textContent=f.label;
   var num=document.createElement('div');num.className='num';
-  var ni=document.createElement('input');ni.type='number';ni.id='f-'+f.k;ni.min=f.min;ni.max=f.max;ni.step=f.step;ni.value=P[f.k];ni.inputMode='decimal';
+  var ni=document.createElement('input');ni.type='number';ni.id='f-'+f.k;ni.min=f.min;ni.max=f.max;ni.step=f.step;ni.value=obj[f.k];ni.inputMode='decimal';
   var un=document.createElement('span');un.className='unit';un.textContent=f.unit||'';
   num.appendChild(ni);num.appendChild(un);
-  var rg=document.createElement('input');rg.type='range';rg.id='r-'+f.k;rg.min=f.min;rg.max=f.max;rg.step=f.step;rg.value=P[f.k];rg.setAttribute('aria-label',f.label);
+  var rg=document.createElement('input');rg.type='range';rg.id='r-'+f.k;rg.min=f.min;rg.max=f.max;rg.step=f.step;rg.value=obj[f.k];rg.setAttribute('aria-label',f.label);
   d.appendChild(lab);d.appendChild(num);d.appendChild(rg);
   if(f.hint){var hn=document.createElement('div');hn.className='hint';hn.textContent=f.hint;d.appendChild(hn);}
-  function setv(v,fromRange){v=clamp(v,f.min,f.max);if(f.step>=1)v=Math.round(v);P[f.k]=v;if(fromRange)ni.value=v;rg.value=v;schedule();}
+  function setv(v,fromRange){v=clamp(v,f.min,f.max);if(f.step>=1)v=Math.round(v);obj[f.k]=v;if(fromRange)ni.value=v;rg.value=v;onChange();}
   rg.addEventListener('input',function(){setv(+rg.value,true)});
   ni.addEventListener('input',function(){var v=parseFloat(ni.value);if(isFinite(v))setv(v,false)});
-  ni.addEventListener('change',function(){ni.value=P[f.k]});
+  ni.addEventListener('change',function(){ni.value=obj[f.k]});
   fieldEls[f.k]=d;
   return d;
 }
@@ -546,7 +577,7 @@ function buildControls(){
   makeSeg(ss,'split',[['last','Highest · Atmel'],['first','CH0 · TI']],schedule);
   fsSh.appendChild(ends);fsSh.appendChild(sp);
   makeSeg($('typeSeg'),'type',[['linear','Slider'],['arc','Arc'],['wheel','Wheel']],function(){F={mode:'path',t:0.37};syncVis();schedule();});
-  makeSeg($('viewSeg'),'view',[['channels','Channels'],['copper','Copper']],function(){drawBoard();drawFinger();});
+  makeSeg($('viewSeg'),'view',[['channels','Channels'],['copper','Copper'],['outline','Outline']],function(){drawBoard();drawFinger();persist();});
   makeSeg($('maskSeg'),'mask',[['covered','Covered'],['exposed','Exposed']],function(){persist();});
   $('fpname').value=P.fpname||'';
   $('fpname').addEventListener('input',function(){P.fpname=$('fpname').value.trim();persist();});
@@ -649,8 +680,8 @@ function colorOf(ch){return P.view==='copper'?COPPER:CH[ch%CH.length]}
 function pathD(pts){var s='';pts.forEach(function(q,i){s+=(i?'L':'M')+q[0].toFixed(3)+' '+q[1].toFixed(3)});return s+'Z'}
 
 // Board preview SVG. viewBox is in board mm with a margin wide enough for the
-// finger. Layers: soldermask rect, 5 mm grid, dashed finger path, electrodes,
-// channel labels (only where the spine is wide enough), 10 mm scale bar, and
+// finger. Layers: soldermask rect, 5 mm grid, reference image, dashed finger path, electrodes,
+// channel labels (only where the spine is wide enough), wheel center +, 10 mm scale bar, and
 // an empty #fingerG group that drawFinger() fills.
 function drawBoard(){
   var g=geom,bb=g.bbox,m=Math.max(4,P.finger/2+1.5);
@@ -660,15 +691,23 @@ function drawBoard(){
   var gd='';for(var x=Math.ceil(vx/5)*5;x<vx+vw;x+=5)gd+='M'+x+' '+vy+'V'+(vy+vh);for(var y=Math.ceil(vy/5)*5;y<vy+vh;y+=5)gd+='M'+vx+' '+y+'H'+(vx+vw);
   s+='<path class="grid" vector-effect="non-scaling-stroke" stroke-width="1" d="'+gd+'"/>';
   var tr='',n=g.polar?Math.ceil(g.Lu/2):1;for(var i=0;i<=n;i++){var q=g.map(g.Lu*i/n,g.W/2);tr+=(i?'L':'M')+q[0].toFixed(3)+' '+q[1].toFixed(3);}
+  s+='<g id="refG"></g>';
   s+='<path class="track" vector-effect="non-scaling-stroke" stroke-width="1" d="'+tr+'"/>';
-  g.polys.forEach(function(pg){s+='<path fill="'+colorOf(pg.ch)+'" d="'+pathD(pg.pts)+'"/>';});
+  var ol=P.view==='outline';
+  s+='<g id="designG">';
+  g.polys.forEach(function(pg){s+=ol?'<path fill="none" stroke="'+CH[pg.ch%CH.length]+'" vector-effect="non-scaling-stroke" stroke-width="1.5" d="'+pathD(pg.pts)+'"/>':'<path fill="'+colorOf(pg.ch)+'" d="'+pathD(pg.pts)+'"/>';});
   var fs=clamp(Math.min(g.W,g.P0*g.uScale)*0.22,1,2.6);
-  g.polys.forEach(function(pg){if(pg.spine>fs*1.1)s+='<text class="lbl" font-size="'+fs.toFixed(2)+'" x="'+pg.anchor[0].toFixed(2)+'" y="'+pg.anchor[1].toFixed(2)+'">'+pg.ch+'</text>';});
+  g.polys.forEach(function(pg){if(pg.spine>fs*1.1)s+='<text class="lbl" font-size="'+fs.toFixed(2)+'"'+(ol?' style="fill:'+CH[pg.ch%CH.length]+'"':'')+' x="'+pg.anchor[0].toFixed(2)+'" y="'+pg.anchor[1].toFixed(2)+'">'+pg.ch+'</text>';});
+  s+='</g>';
+  if(g.cyclic){var ck=Math.min(2,g.ri*0.4);s+='<path class="center" vector-effect="non-scaling-stroke" stroke-width="1.5" d="M'+(-ck)+' 0H'+ck+'M0 '+(-ck)+'V'+ck+'"/>';}
   var sb=vx+2,sy=vy+vh-2.2;
   s+='<path class="scale" vector-effect="non-scaling-stroke" stroke-width="1.5" d="M'+sb+' '+sy+'h10M'+sb+' '+(sy-0.8)+'v1.6M'+(sb+10)+' '+(sy-0.8)+'v1.6"/>';
   s+='<text class="scale-t" font-size="1.5" x="'+(sb+11)+'" y="'+(sy+0.5)+'">10 mm</text>';
   s+='<g id="fingerG"></g>';
   svg.innerHTML=s;
+  // Re-attach the cached <image> rather than re-serialising its data URL on every redraw.
+  if(REF.el)$('refG').appendChild(REF.el);
+  blendRef();
   var dims;
   if(g.type==='linear')dims=f2(P.L,1)+' × '+f2(P.W,1)+' mm · '+g.N+' ch · pitch '+f2(g.P0,2)+' mm';
   else if(g.type==='arc')dims='R'+f2(g.ro,1)+' / R'+f2(g.ri,1)+' mm · '+f2(P.sweep,0)+'° · '+g.N+' ch · pitch '+f2(g.P0*g.uScale,2)+' mm';
@@ -793,7 +832,7 @@ function drawExportNote(){
   var g=geom;
   $('expNote').innerHTML='SVG units are millimetres. In KiCad use <code>File → Import → Graphics</code> at scale 1.0 onto <code>F.Cu</code>; each channel arrives as a filled polygon that you convert to a pad or zone. '+
   'The footprint is ready to place: one custom pad per channel, pad 1 = CH0'+(g.split?', and both end halves share pad '+(g.chAt[0]+1):'')+'. Its origin is the '+(g.polar?'arc center':'slider center')+'. The footprint saves as a .zip holding a <code>CapTouch.pretty</code> library. '+
-  'The CircuitPython export is a <code>SLIDER</code> dict for <code>slider_pos()</code> in <code>captouch_pos.py</code>, which turns per-channel touch values into a 0–1 position.';
+  'The CircuitPython export is a <code>SLIDER</code> dict for <code>slider_pos()</code> in <code>captouch_pos.py</code>, which turns per-channel touch values into a 0–1 position. Its <code>design</code> entry holds these settings: paste the dict (or an exported SVG) into <strong>Load design</strong> to get them back.';
 }
 
 /* ---------- export ----------
@@ -818,8 +857,10 @@ function defaultName(){
 }
 // User-entered name if any, sanitised to characters safe for file and footprint names.
 function fpName(){return (P.fpname||defaultName()).replace(/[^A-Za-z0-9_.\-]/g,'_')}
-// Parameters as JSON for the SVG header comment ("--" is illegal inside XML comments).
-function paramsComment(){var q=Object.assign({},P);delete q.view;delete q.fpname;return JSON.stringify(q).replace(/--/g,'- -')}
+// Design parameters as JSON, as embedded in the exports and read back by Load design.
+function designJSON(){var q=Object.assign({},P);delete q.view;delete q.fpname;return JSON.stringify(q)}
+// "--" is illegal inside XML comments.
+function paramsComment(){return designJSON().replace(/--/g,'- -')}
 
 function makeSVG(){
   var g=geom,bb=g.bbox,w=bb[2]-bb[0],h=bb[3]-bb[1],out=[];
@@ -851,6 +892,8 @@ function makePython(){
   if(d.center)o.push('    "center": '+tup(d.center)+',');
   if(d.ends)o.push('    "ends": '+tup(d.ends)+',','    "offset": '+n4(d.offset)+',','    "scale": '+n4(d.scale)+',');
   o.push('    "travel": '+n4(g.Lu)+',','    "units": "'+(g.polar?'deg':'mm')+'",');
+  // Designer parameters, for Load design. Valid Python: values are only strings and numbers.
+  o.push('    "design": '+designJSON()+',');
   o.push('}');
   return o.join('\n')+'\n';
 }
@@ -947,16 +990,161 @@ $('savePy').addEventListener('click',function(){offer(fpName()+'.py',makePython(
 $('copyPy').addEventListener('click',function(){copyText(makePython(),'CircuitPython')});
 $('copyClose').addEventListener('click',function(){$('copybox').hidden=true});
 
+/* ---------- load design ----------
+   Accepts anything that contains the parameter JSON: the "design" entry of a
+   CircuitPython export, an exported SVG (Params in its header comment), or
+   the bare object. Every balanced {...} in the text is tried and the one
+   sharing the most keys with DEF wins, so the outer SLIDER dict (tuples, not
+   JSON) is skipped. Values are range-checked against FIELDS and the seg
+   options; unknown keys are ignored. */
+var FIELD={};FIELDS.forEach(function(f){FIELD[f.k]=f});
+var SEGKEYS=['type','ends','split','view','mask'];
+function looseJSON(s){
+  try{return JSON.parse(s)}catch(e){}
+  // Hand-edited Python dicts: single quotes, True/False/None, trailing commas.
+  s=s.replace(/'/g,'"').replace(/\bTrue\b/g,'true').replace(/\bFalse\b/g,'false').replace(/\bNone\b/g,'null').replace(/,\s*([}\]])/g,'$1');
+  try{return JSON.parse(s)}catch(e){return null}
+}
+function parseDesign(text){
+  var best=null,bestN=0;
+  for(var i=0;i<text.length;i++){
+    if(text[i]!=='{')continue;
+    for(var j=i,depth=0;j<text.length;j++){if(text[j]==='{')depth++;else if(text[j]==='}'&&--depth===0)break;}
+    if(depth)continue;
+    var o=looseJSON(text.slice(i,j+1));if(!o||typeof o!=='object')continue;
+    var n=Object.keys(DEF).filter(function(k){return k in o}).length;
+    if(n>bestN){best=o;bestN=n;}
+  }
+  return best;
+}
+// Copy valid values into P; returns how many were applied.
+function applyDesign(o){
+  var n=0;
+  Object.keys(DEF).forEach(function(k){
+    if(!(k in o)||k==='fpname')return;
+    var v=o[k],f=FIELD[k];
+    if(f){v=parseFloat(v);if(!isFinite(v))return;v=clamp(v,f.min,f.max);if(f.step>=1)v=Math.round(v);}
+    else if(typeof v!=='string'||!$('seg-'+k+'-'+v))return;
+    P[k]=v;n++;
+  });
+  return n;
+}
+// Push P back into the form controls after a load.
+function syncControls(){
+  FIELDS.forEach(function(f){$('f-'+f.k).value=P[f.k];$('r-'+f.k).value=P[f.k];});
+  SEGKEYS.forEach(function(k){var b=$('seg-'+k+'-'+P[k]);if(b)Array.prototype.forEach.call(b.parentNode.children,function(c){c.setAttribute('aria-pressed',String(c===b))});});
+}
+function closeLoad(){$('loadbox').hidden=true;$('loadOpen').focus();}
+$('loadOpen').addEventListener('click',function(){$('loadErr').hidden=true;$('loadbox').hidden=false;$('loadtext').focus();$('loadtext').select();});
+$('loadCancel').addEventListener('click',closeLoad);
+$('loadbox').addEventListener('keydown',function(ev){if(ev.key==='Escape')closeLoad();});
+$('loadApply').addEventListener('click',function(){
+  var o=parseDesign($('loadtext').value),n=o?applyDesign(o):0;
+  if(!n){$('loadErr').textContent='No designer parameters found. Paste a CircuitPython export (with its "design" entry), an exported SVG, or the JSON.';$('loadErr').hidden=false;return;}
+  syncControls();syncVis();F={mode:'path',t:0.37};schedule();closeLoad();
+  toast('Loaded '+n+' parameters');
+});
+
+/* ---------- reference image ----------
+   An image drawn under the copper so the parameters can be tuned to match an
+   existing sensor (use the Outline view to see through the copper). OV holds
+   its placement in board mm and is saved under its own localStorage key:
+   it isn't a design parameter, so it stays out of DEF and the exports. The
+   image itself isn't saved (too big for localStorage). */
+var SVGNS='http://www.w3.org/2000/svg';
+var REF={el:null,ar:1};
+var OV={refW:40,refX:0,refY:0,refRot:0,refMix:50,refFlip:false},ovSaved=false;
+try{var so=JSON.parse(localStorage.getItem('captouch-designer-ref')||'null');if(so&&typeof so==='object'){ovSaved=true;Object.keys(OV).forEach(function(k){if(k in so)OV[k]=so[k]});}}catch(e){}
+var REFHELP='Overlay a photo or screenshot of an existing sensor, then tune the parameters until the outlines match. You can also drop an image on the preview.';
+function persistRef(){try{localStorage.setItem('captouch-designer-ref',JSON.stringify(OV))}catch(e){}}
+var REFFIELDS=[
+  {k:'refW',label:'Image width',unit:'mm',min:1,max:400,step:0.1},
+  {k:'refX',label:'Center X',unit:'mm',min:-200,max:200,step:0.05},
+  {k:'refY',label:'Center Y',unit:'mm',min:-200,max:200,step:0.05},
+  {k:'refRot',label:'Rotation',unit:'°',min:-180,max:180,step:0.5},
+  {k:'refMix',label:'Blend',unit:'%',min:0,max:100,step:1}
+];
+function placeRef(){
+  if(!REF.el)return;
+  var w=OV.refW,h=w*REF.ar;
+  REF.el.setAttribute('x',-w/2);REF.el.setAttribute('y',-h/2);REF.el.setAttribute('width',w);REF.el.setAttribute('height',h);
+  REF.el.setAttribute('transform','translate('+OV.refX+' '+OV.refY+') rotate('+OV.refRot+')'+(OV.refFlip?' scale(-1 1)':''));
+  blendRef();persistRef();
+}
+// Crossfade: 0 = image only, 100 = design only, both fully opaque at 50.
+function blendRef(){
+  var t=REF.el?OV.refMix/100:1;
+  if(REF.el)REF.el.setAttribute('opacity',Math.min(1,2*(1-t)));
+  var dg=$('designG');if(dg)dg.setAttribute('opacity',Math.min(1,2*t));
+}
+function syncRefFields(){REFFIELDS.forEach(function(f){$('f-'+f.k).value=OV[f.k];$('r-'+f.k).value=OV[f.k];});$('refFlip').checked=!!OV.refFlip;}
+(function(){
+  var c=$('refCtl');
+  REFFIELDS.forEach(function(f){c.appendChild(makeField(f,OV,placeRef));});
+  var ends=document.createElement('div');ends.className='ends';ends.innerHTML='<span>100% image</span><span>100% design</span>';
+  $('f-refMix').closest('.field').appendChild(ends);
+  var fl=document.createElement('label');fl.className='chk';
+  fl.innerHTML='<input type="checkbox" id="refFlip"> Mirror image';c.appendChild(fl);
+  $('refFlip').checked=!!OV.refFlip;
+  $('refFlip').addEventListener('change',function(){OV.refFlip=$('refFlip').checked;placeRef();});
+})();
+// Size the image to the design's bounding box, centred on it.
+function fitRef(){
+  var bb=geom.bbox;OV.refW=Math.round((bb[2]-bb[0])*10)/10;OV.refX=Math.round((bb[0]+bb[2])*10)/20;OV.refY=Math.round((bb[1]+bb[3])*10)/20;
+  syncRefFields();placeRef();
+}
+function loadRefFile(file){
+  if(!file||!/^image\//.test(file.type)){toast('That isn’t an image file');return;}
+  // Data URL rather than a blob: URL, which sandboxed hosts may block.
+  var rd=new FileReader();
+  rd.onload=function(){
+    var im=new Image();
+    im.onload=function(){
+      var el=document.createElementNS(SVGNS,'image');
+      el.setAttribute('class','ref');el.setAttribute('preserveAspectRatio','none');el.setAttribute('href',rd.result);
+      var first=!REF.el;
+      REF={el:el,ar:im.naturalHeight/im.naturalWidth};
+      $('refCtl').hidden=$('refFit').hidden=$('refClear').hidden=false;
+      $('refNote').textContent='Shift-drag the preview to move the image. The Outline view shows the image through the copper.';
+      if(P.view!=='outline')$('seg-view-outline').click();
+      if(first&&!ovSaved)fitRef();
+      placeRef();drawBoard();drawFinger();
+    };
+    im.onerror=function(){toast('Couldn’t read that image')};
+    im.src=rd.result;
+  };
+  rd.readAsDataURL(file);
+}
+$('refLoad').addEventListener('click',function(){$('refFile').value='';$('refFile').click();});
+$('refFile').addEventListener('change',function(){loadRefFile($('refFile').files[0]);});
+$('refFit').addEventListener('click',fitRef);
+$('refClear').addEventListener('click',function(){
+  if(REF.el)REF.el.remove();REF={el:null,ar:1};blendRef();
+  $('refCtl').hidden=$('refFit').hidden=$('refClear').hidden=true;
+  $('refNote').textContent=REFHELP;
+});
+$('board').addEventListener('dragover',function(ev){ev.preventDefault();});
+$('board').addEventListener('drop',function(ev){ev.preventDefault();var f=ev.dataTransfer&&ev.dataTransfer.files[0];if(f)loadRefFile(f);});
+
 /* ---------- finger interaction ----------
    Pointer drag places the finger anywhere (free mode, board mm via the SVG's
-   screen transform). Arrow keys move it along the travel (path mode): 1% per
-   press, 5% with Shift; wheels wrap around. */
+   screen transform); Shift-drag moves the reference image instead. Arrow
+   keys move the finger along the travel (path mode): 1% per press, 5% with
+   Shift; wheels wrap around. */
 /* ---------- finger interaction ---------- */
 var svgEl=$('board'),dragging=false;
 function svgPoint(ev){var pt=svgEl.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;var m=svgEl.getScreenCTM();if(!m)return null;var r=pt.matrixTransform(m.inverse());return [r.x,r.y];}
 function moveTo(ev){var p=svgPoint(ev);if(!p)return;F={mode:'free',x:p[0],y:p[1]};drawFinger();}
-svgEl.addEventListener('pointerdown',function(ev){dragging=true;try{svgEl.setPointerCapture(ev.pointerId)}catch(e){}moveTo(ev);});
-svgEl.addEventListener('pointermove',function(ev){if(dragging)moveTo(ev);});
+// Shift-drag moves the reference image instead: refDrag = start point and start offset.
+var refDrag=null;
+function moveRef(ev){var p=svgPoint(ev);if(!p)return;OV.refX=Math.round((refDrag.x+p[0]-refDrag.p[0])*100)/100;OV.refY=Math.round((refDrag.y+p[1]-refDrag.p[1])*100)/100;syncRefFields();placeRef();}
+svgEl.addEventListener('pointerdown',function(ev){
+  dragging=true;try{svgEl.setPointerCapture(ev.pointerId)}catch(e){}
+  var p=ev.shiftKey&&REF.el&&svgPoint(ev);
+  refDrag=p?{p:p,x:OV.refX,y:OV.refY}:null;
+  if(!refDrag)moveTo(ev);
+});
+svgEl.addEventListener('pointermove',function(ev){if(dragging)refDrag?moveRef(ev):moveTo(ev);});
 svgEl.addEventListener('pointerup',function(){dragging=false});
 svgEl.addEventListener('pointercancel',function(){dragging=false});
 svgEl.addEventListener('keydown',function(ev){

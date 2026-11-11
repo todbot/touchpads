@@ -43,14 +43,15 @@ Run it after any change to the geo script. Add a case to its `cases` list when y
 - Electrode polygons never self-intersect and never come closer than the clearance (the test checks both).
 - The KiCad footprint uses the KiCad 7 s-expression format (`version 20221018`). Pad number = channel + 1. Both halves of a split channel get the same pad number so they land on one net. Covered mask = `F.Cu` only; exposed adds `F.Mask`.
 - SVG export: width/height in `mm`, viewBox in mm, one `<g id="CHn">` per channel, polygons only (no arcs or curves), so KiCad's importer keeps real size at scale 1.0.
-- Keys in `DEF` are persisted to `localStorage` (key `captouch-designer`) and written as JSON into the SVG header comment. Renaming a key silently drops users' saved settings; add new keys with defaults instead.
+- Keys in `DEF` are persisted to `localStorage` (key `captouch-designer`) and written as JSON (`designJSON()`) into the SVG header comment and the `"design"` entry of the CircuitPython export. **Load design** (`parseDesign()`/`applyDesign()`) reads either back, so renaming a key silently drops users' saved settings and old exports; add new keys with defaults instead. Values must stay strings or numbers so the JSON is also valid Python.
 - CircuitPython export: `posData` (in `build()`), `makePython()` and `slider_pos()` in `../circuitpython/captouch_designer_demo/captouch_pos.py` must reproduce `estimate()`, with position as a 0..1 fraction of travel. Change all of them together.
-- Form controls get stable ids (`f-<key>`, `r-<key>`, `seg-<key>-<value>`).
+- Form controls get stable ids (`f-<key>`, `r-<key>`, `seg-<key>-<value>`). Load design relies on them to validate choices and refresh the form.
+- The reference image overlay is not a design parameter: its placement lives in `OV` (localStorage key `captouch-designer-ref`), never in `DEF` or the exports. The image itself is not saved. It is drawn under the copper; the Outline view shows it through the electrodes.
 
 ## Adding a parameter
 
 1. Add a default to `DEF`.
-2. Add an entry to `FIELDS` (numeric) or a `makeSeg` call (choice). The `g` group controls when it shows (`syncVis`).
+2. Add an entry to `FIELDS` (numeric) or a `makeSeg` call (choice; also add the key to `SEGKEYS` so Load design refreshes it). The `g` group controls when it shows (`syncVis`).
 3. Use `p.<key>` in `build()`; return any derived value the UI needs on the geometry object.
 4. Add a design check in `drawChecks()` if the docs give a range for it.
 5. Add a test case to `tests/geometry-check.mjs`.

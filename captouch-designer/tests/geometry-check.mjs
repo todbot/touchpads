@@ -30,6 +30,8 @@ const cases = [
   { type: 'wheel' }, { type: 'wheel', n: 4 }, { type: 'wheel', n: 8, wRo: 40, wRi: 25 },
   { type: 'wheel', tines: 3, overlap: 90, clr: 0.5, tip: 0.1 }, { type: 'wheel', tines: 15, wRo: 15, wRi: 8 },
   { type: 'wheel', rot: 45, overlap: 30 },
+  // touchwheel0
+  { type: 'wheel', tines: 7, overlap: 87, clr: 0.4, tip: 0.2, wRo: 15.5, wRi: 6 },
 ];
 
 function orient(p, q, r) { return Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])); }
