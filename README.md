@@ -29,8 +29,6 @@ are two ways of using these capacative touch pads
 
 
 
-
-
 ## Touchwheels
 
 These work by using only three capactive touch pads in a specific interleaved 
@@ -68,10 +66,10 @@ There are several examples on how to use the touchwheel:
 
 - more demos coming!
 
-### What's in Tindie touchwheel0 kit: 
+### What's in touchwheel0 kit: 
 
-The [touchwheel0 kit](https://www.tindie.com/products/todbot/touchwheel0-capacitive-touch-wheel/)
-on Tindie comes with:
+The [touchwheel0 kit](https://smallrun.net/shop/todbot/touchwheel0-capacitive-touch-wheel) 
+comes with:
 
 - touchwheel0 black PCB
 - 4 x 1M 0805 SMD resistors (only three needed, one is a spare)
