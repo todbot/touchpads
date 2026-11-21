@@ -7,6 +7,8 @@ Design your own sliders and wheels with the
 [Captouch Designer](https://todbot.github.io/touchpads/captouch-designer/)
 web app (source in [`captouch-designer/`](./captouch-designer/)).
 
+[![Find todbot synth toys on SmallRun](https://smallrun.net/brand/badge.png?style=sold-on)](https://smallrun.net/shop/todbot)
+
 ## Touchpads
 
 Touchpads are capacitive sensing button inputs that consist of a copper
@@ -40,7 +42,7 @@ between the pads to compute a distance along the slider.
 
 * TouchWheelSAO -- [Touchwheel SAO as part of  Hackaday Supercon 2024 badge](https://github.com/todbot/TouchwheelSAO)
 
-* touchwheel0 - [available on Tindie as a kit!](https://www.tindie.com/products/todbot/touchwheel0-capacitive-touch-wheel/)
+* touchwheel0 - [available on SmallRun!](https://smallrun.net/shop/todbot/touchwheel0-capacitive-touch-wheel)
 
   <img width=500 src="./docs/touchwheel0_photo1.jpg">
   
