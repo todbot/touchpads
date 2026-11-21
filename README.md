@@ -9,6 +9,8 @@ web app (source in [`captouch-designer/`](./captouch-designer/)).
 
 [![Find todbot synth toys on SmallRun](https://smallrun.net/brand/badge.png?style=sold-on)](https://smallrun.net/shop/todbot)
 
+
+
 ## Touchpads
 
 Touchpads are capacitive sensing button inputs that consist of a copper
@@ -31,21 +33,20 @@ are two ways of using these capacative touch pads
 
 ## Touchwheels
 
-These work by using only three capactive touch pads in a specific interleaved 
+Touchwheels work by using capactive touch pads in a specific interleaved 
 geometry and measuring the relative ratio of analog capacitive touch values 
-between the pads to compute a distance along the slider. 
-
+between the pads to compute a distance or position along the slider. 
 
 ### Touchwheel boards made so far:
 
-* TouchWheelSAO -- [Touchwheel SAO as part of  Hackaday Supercon 2024 badge](https://github.com/todbot/TouchwheelSAO)
-
 * touchwheel0 - [available on SmallRun!](https://smallrun.net/shop/todbot/touchwheel0-capacitive-touch-wheel)
 
-  <img width=500 src="./docs/touchwheel0_photo1.jpg">
+* TouchWheelSAO -- [TouchwheeSAO part of Hackaday Supercon 2024 badge](https://github.com/todbot/TouchwheelSAO)
+
+<img width=500 src="./docs/touchwheel0_photo1.jpg">
   
-  Similar to an iPod's wheel, `touchwheel0` is a 30 mm (0.6") diameter 
-  [rotary capacitive touch slider](https://onlinedocs.microchip.com/pr/GUID-A8A0085D-58D1-4E41-A07D-B93BFDE11AFE-en-US-4/index.html?GUID-FB5E9311-C731-4326-82D2-CD5F0ED8E378) that can be used with most any microcontroller. It uses three digital GPIO pins and requires no extra components. The included examples in CircuitPython and Arduino show how to turn the raw capacitive touch readings of the three pins into a linear 0-360º angle measurement.
+Similar to an iPod's wheel, `touchwheel0` is a 30 mm (0.6") diameter 
+  [rotary capacitive touch slider](https://ww1.microchip.com/downloads/en/AppNotes/Capacitive-Touch-Sensor-Design-Guide-DS00002934-B.pdf) that can be used with most any microcontroller. It uses three digital GPIO pins and requires no extra components. The included examples in CircuitPython and Arduino show how to turn the raw capacitive touch readings of the three pins into a single 0-360º angle measurement.
 
 * picoslidertoy - Available at the [picoslidertoy repo](https://github.com/todbot/picoslidertoy)
   
